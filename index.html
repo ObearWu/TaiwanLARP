@@ -310,7 +310,7 @@ footer b{font-family:var(--display);font-weight:400;font-size:17px;color:var(--i
 <script>
 // 資料改由後端 API 提供（原本寫死在這裡）。API 回傳的欄位格式跟原本的陣列一模一樣，
 // 所以下面畫面與互動的程式都不用改，只是等資料到了才開始執行（見 start()）。
-const API_BASE=/^(localhost|127\.0\.0\.1)$/.test(location.hostname)?"http://127.0.0.1:5001":"https://taiwan-larp-backend.onrender.com";
+const API_BASE=/^(localhost|127\.0\.0\.1)$/.test(location.hostname)?"http://127.0.0.1:5001":"https://taiwanlarp-backend.onrender.com";
 let STORES,CITY_ORDER,CITY_POS,HOST_URLS,HOSTS,BDAY,FOOD,SCRIPTS;
 const loadingState=msg=>`<div class="empty"><svg><use href="#bearface"/></svg><span>${msg}</span></div>`;
 function showLoading(msg){
