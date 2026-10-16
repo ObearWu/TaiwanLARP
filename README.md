@@ -32,6 +32,17 @@
 
 資料要等 API 回應才有，所以多了一個載入狀態：資料到之前，各分頁顯示「黑熊正在搬資料，請稍候…」；API 連不上時改顯示「黑熊搬資料時跌倒了，請稍後重新整理頁面。」，沿用原本「找不到資料」的同一種樣式。
 
+### 後台頁面（admin.html）
+
+`admin.html` 是獨立的後台頁面，前台沒有任何連結指向它（前台畫面維持不變），網址是 `https://obearwu.github.io/TaiwanLARP/admin.html`。頁面加了 `noindex`，不會被搜尋引擎收錄；但真正擋住未授權的人的是後端——每支後台 API 都會檢查登入與權限，頁面本身被看到也沒關係。
+
+- **登入**：Google 登入按鈕 → 拿 Google ID Token 換後端發的 session token，存在瀏覽器的 `localStorage`，下次打開不用重新登入。Google 登入成功、但 email 不在使用者列表裡的人，會停在登入畫面看到「此帳號尚未獲得授權」。後端暫時連不上（例如 Render 剛好在喚醒）時不會清掉 session，重新整理就會再試一次。
+- **分頁**：店家、縣市、私團主、壽星優惠、餐飲規範、原創劇本、頁面文字、使用者（使用者分頁只有管理員看得到）。
+- **每個內容分頁**：列表、搜尋、新增、編輯、刪除（刪除前確認）。表單欄位對應後端 `content/resources.py` 的欄位定義；輸入錯誤時顯示後端回傳的訊息（例如「店名不能空白」「網址必須是 http:// 或 https:// 開頭」）。新增的資料預設排在最後。
+- **刻意的保護**：縣市底下還有店家時不能刪除；不能停用自己或移除自己的管理員權限；停用的使用者會立刻被登出。
+
+驗證方式（2026-10-16，本機）：用一組臨時的管理員 session 實際操作每個分頁——新增、編輯、搜尋、刪除，以及空白必填欄位、錯誤網址、刪除使用中的縣市、停用自己這幾種該被擋下的情況，並確認改動確實出現在 `/api/public/all`；手機寬度（375px）沒有整頁橫向捲動、深色模式正常。測試資料事後全部刪除，並重新比對資料庫內容與原始資料完全一致。真正的 Google 登入需要網站擁有者本人操作。
+
 ### API 網址怎麼決定
 
 `index.html` 裡的 `API_BASE`：網址是 `localhost` 或 `127.0.0.1`（本機測試）時打 `http://127.0.0.1:5001`，其他情況打 Render 上的正式後端。
@@ -39,7 +50,8 @@
 ### 檔案結構
 
 ```
-index.html          整個網站（樣式、畫面、互動程式都在這一個檔案）
+index.html          前台（樣式、畫面、互動程式都在這一個檔案）
+admin.html          後台（同樣是單一檔案）
 assets/bear.jpg     黑熊主視覺圖片（頁首大圖、頁尾頭像共用）
 ```
 
@@ -78,7 +90,7 @@ cd TaiwanLARP/web
 python3 -m http.server 8000
 ```
 
-瀏覽器打開 `http://localhost:8000/`，應該看到完整的網站。用 `localhost` 而不是 `127.0.0.1`：後台的 Google 登入不接受 IP 位址當來源。
+瀏覽器打開 `http://localhost:8000/`，應該看到完整的網站；後台在 `http://localhost:8000/admin.html`。用 `localhost` 而不是 `127.0.0.1`：後台的 Google 登入不接受 IP 位址當來源。
 
 > 註：不能直接雙擊 `index.html` 用 `file://` 打開——那樣頁面沒有正常的來源（Origin 是 `null`），後端的 CORS 設定會擋下 API 請求，畫面會停在「黑熊搬資料時跌倒了」。
 
@@ -127,6 +139,17 @@ How it was verified: the original HTML and the new page were opened side by side
 
 The data now arrives with the API response, so there's a loading state: until the data arrives, each tab shows "黑熊正在搬資料，請稍候…" ("The bear is moving the data, please wait…"); if the API can't be reached, it shows "黑熊搬資料時跌倒了，請稍後重新整理頁面。" ("The bear tripped while moving the data; please refresh later."), using the same style as the original "nothing found" message.
 
+### The Admin Page (admin.html)
+
+`admin.html` is a standalone admin page with no links to it from the public site (the public page stays unchanged); its URL is `https://obearwu.github.io/TaiwanLARP/admin.html`. The page carries `noindex` so search engines don't list it; but what actually keeps unauthorized people out is the backend — every admin API checks sign-in and permissions, so it doesn't matter if someone sees the page itself.
+
+- **Sign-in**: the Google sign-in button → exchange the Google ID Token for a backend-issued session token, kept in the browser's `localStorage` so you don't have to sign in again next time. Someone whose Google sign-in succeeds but whose email isn't in the users list stays on the sign-in screen with "此帳號尚未獲得授權" (this account isn't authorized). If the backend is temporarily unreachable (say, Render is waking up), the session isn't cleared; refreshing tries again.
+- **Tabs**: stores, cities, private hosts, birthday deals, food rules, original scripts, page texts, and users (the users tab is visible to admins only).
+- **Each content tab**: list, search, add, edit, delete (with confirmation). Form fields mirror the field definitions in the backend's `content/resources.py`; input errors show the backend's message (e.g. "店名不能空白" — store name can't be blank; "必須是 http:// 或 https:// 開頭" — must start with http:// or https://). New entries are placed last by default.
+- **Deliberate safeguards**: a city that still has stores can't be deleted; you can't disable yourself or remove your own admin role; disabled users are signed out immediately.
+
+How it was verified (2026-10-16, locally): using a temporary admin session, every tab was exercised for real — add, edit, search, delete, plus the cases that should be blocked (blank required fields, a bad URL, deleting a city in use, disabling yourself) — confirming each change showed up in `/api/public/all`; at phone width (375px) the page doesn't scroll sideways, and dark mode works. All test data was deleted afterward, and the database was re-compared against the original data and matched exactly. Real Google sign-in has to be done by the site owner in person.
+
 ### How the API URL Is Chosen
 
 `API_BASE` in `index.html`: when the page is served from `localhost` or `127.0.0.1` (local testing) it calls `http://127.0.0.1:5001`; otherwise it calls the production backend on Render.
@@ -134,7 +157,8 @@ The data now arrives with the API response, so there's a loading state: until th
 ### File Layout
 
 ```
-index.html          The whole site (styles, markup, and interaction code all in this one file)
+index.html          The public site (styles, markup, and interaction code all in this one file)
+admin.html          The admin interface (also a single file)
 assets/bear.jpg     The bear hero image (shared by the header image and the footer avatar)
 ```
 
@@ -173,7 +197,7 @@ cd TaiwanLARP/web
 python3 -m http.server 8000
 ```
 
-Open `http://localhost:8000/` in a browser and you should see the full site. Use `localhost`, not `127.0.0.1`: Google sign-in on the admin page doesn't accept an IP address as an origin.
+Open `http://localhost:8000/` in a browser and you should see the full site; the admin interface is at `http://localhost:8000/admin.html`. Use `localhost`, not `127.0.0.1`: Google sign-in on the admin page doesn't accept an IP address as an origin.
 
 > Note: you can't just double-click `index.html` and open it via `file://` — that gives the page no real origin (its Origin is `null`), the backend's CORS settings block the API request, and the page gets stuck on "黑熊搬資料時跌倒了".
 

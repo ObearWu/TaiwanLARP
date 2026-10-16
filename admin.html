@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>黑熊的後台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<script src="https://accounts.google.com/gsi/client" async></script>
+<style>
+/* 配色沿用前台（index.html）的布丁色系，深色模式同一套變數 */
+:root{
+  --bg:#fff4d6; --paper:#fffcf3; --ink:#2b2118; --muted:#7b6550; --line:#f1dca3;
+  --caramel:#b25d17; --caramel-deep:#8a4310; --custard:#ffd35c; --custard-soft:#ffe9a6;
+  --soft:#fde4c0; --tag:#fbefcc; --ok:#4c7a35; --ok-soft:#e5f0d6; --bear:#1d1611;
+  --muzzle:#d9a46a; --blush:#f4a7a0; --cherry:#d9433b; --on-accent:#fffcf3; --danger:#b3261e;
+  --display:"Huninn","jf open 粉圓","PingFang TC","Microsoft JhengHei",sans-serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1f1812; --paper:#2a2019; --ink:#fbeed3; --muted:#c7ad8d; --line:#47372a;
+  --caramel:#f0a04b; --caramel-deep:#ffbf75; --custard:#e9b93c; --custard-soft:#4a3a1c;
+  --soft:#3e2b1b; --tag:#34281e; --ok:#a3cf84; --ok-soft:#263020; --bear:#120d0a;
+  --muzzle:#c99059; --blush:#d9827a; --cherry:#e0574e; --on-accent:#1f1812; --danger:#f2b8b5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1f1812; --paper:#2a2019; --ink:#fbeed3; --muted:#c7ad8d; --line:#47372a;
+  --caramel:#f0a04b; --caramel-deep:#ffbf75; --custard:#e9b93c; --custard-soft:#4a3a1c;
+  --soft:#3e2b1b; --tag:#34281e; --ok:#a3cf84; --ok-soft:#263020; --bear:#120d0a;
+  --muzzle:#c99059; --blush:#d9827a; --cherry:#e0574e; --on-accent:#1f1812; --danger:#f2b8b5; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.6}
+a{color:var(--caramel)}
+button,input,select,textarea{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--caramel);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 16px 80px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;padding-block:8px 4px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:24px}
+.brand svg{width:40px;height:40px}
+.account{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.role{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--custard);color:var(--bear)}
+
+.btn{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 16px;cursor:pointer;font-size:14px;white-space:nowrap}
+.btn:hover{border-color:var(--custard)}
+.btn.primary{background:var(--caramel);border-color:var(--caramel);color:var(--on-accent);font-weight:500}
+.btn.primary:hover{background:var(--caramel-deep);border-color:var(--caramel-deep)}
+.btn.danger{color:var(--danger);border-color:transparent;background:none;padding-inline:8px}
+.btn.danger:hover{text-decoration:underline}
+.btn.small{padding:2px 12px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+
+/* 登入卡片 */
+.gate{max-width:420px;margin:12vh auto 0;background:var(--paper);border:3px solid var(--caramel);border-radius:26px 26px 32px 32px;padding:28px 24px;display:grid;justify-items:center;gap:12px;text-align:center;box-shadow:0 8px 0 var(--custard-soft)}
+.gate svg{width:72px;height:72px}
+.gate b{font-family:var(--display);font-weight:400;font-size:22px}
+.gate p{margin:0;color:var(--muted);font-size:14px}
+.gate .err{color:var(--danger)}
+
+/* 分頁 */
+nav.tabs{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:8px;overflow-x:auto;padding-block:12px;scrollbar-width:none}
+nav.tabs button{flex:none;font-family:var(--display);font-size:15px;background:var(--paper);border:2px solid var(--line);border-top-width:5px;color:var(--muted);padding:5px 15px 6px;border-radius:14px 14px 20px 20px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--custard);border-color:var(--custard);border-top-color:var(--caramel);color:var(--bear)}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 14px}
+.toolbar h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0 8px 0 0}
+.toolbar .count{font-size:13px;color:var(--muted)}
+.spacer{flex:1}
+.search{min-width:220px;flex:0 1 320px;padding:7px 16px;border:2px solid var(--line);border-radius:999px;background:var(--paper)}
+
+.tablewrap{overflow-x:auto;background:var(--paper);border:2px solid var(--line);border-radius:18px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:left;border-bottom:2px dotted var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:400;color:var(--caramel-deep);background:var(--custard-soft);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+td.actions{white-space:nowrap;text-align:right}
+td .clip{display:block;max-width:28ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr.dim td{opacity:.55}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+/* 頁面文字 */
+.texts{display:grid;gap:14px}
+.textcard{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:14px 16px;display:grid;gap:8px}
+.textcard label{font-weight:700}
+.textcard small{color:var(--muted)}
+
+/* 編輯表單 */
+dialog{border:3px solid var(--caramel);border-radius:24px;background:var(--paper);color:var(--ink);padding:0;width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 32px)}
+dialog::backdrop{background:rgba(31,24,18,.45)}
+dialog form{display:grid;gap:12px;padding:20px}
+dialog h3{margin:0;font-family:var(--display);font-weight:400;font-size:21px}
+.field{display:grid;gap:4px}
+.field > span{font-size:13px;font-weight:700}
+.field small{color:var(--muted);font-size:12px}
+.field input:not([type=checkbox]),.field select,.field textarea,.textcard textarea{width:100%;padding:7px 12px;border:2px solid var(--line);border-radius:12px;background:var(--bg)}
+.field textarea,.textcard textarea{min-height:80px;resize:vertical}
+.field.check{grid-template-columns:auto 1fr;align-items:center;gap:8px}
+.field.check input{width:18px;height:18px;accent-color:var(--caramel)}
+.req{color:var(--danger)}
+.form-err{color:var(--danger);font-size:14px;margin:0}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;padding-top:4px}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:50;background:var(--bear);color:#fbeed3;padding:9px 20px;border-radius:999px;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.2);max-width:calc(100vw - 32px)}
+#toast.err{background:var(--danger);color:#fff}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="bearface" viewBox="0 0 80 80">
+    <circle cx="18" cy="20" r="11" fill="var(--bear)"/><circle cx="62" cy="20" r="11" fill="var(--bear)"/>
+    <circle cx="18" cy="20" r="5" fill="var(--muzzle)"/><circle cx="62" cy="20" r="5" fill="var(--muzzle)"/>
+    <circle cx="40" cy="44" r="30" fill="var(--bear)"/>
+    <ellipse cx="40" cy="54" rx="14" ry="10" fill="var(--muzzle)"/>
+    <ellipse cx="40" cy="49" rx="5" ry="3.5" fill="var(--bear)"/>
+    <circle cx="29" cy="38" r="3.2" fill="#fffcf3"/><circle cx="51" cy="38" r="3.2" fill="#fffcf3"/>
+    <circle cx="29.6" cy="38.6" r="1.7" fill="var(--bear)"/><circle cx="51.6" cy="38.6" r="1.7" fill="var(--bear)"/>
+    <ellipse cx="21" cy="50" rx="4" ry="2.4" fill="var(--blush)" opacity=".8"/><ellipse cx="59" cy="50" rx="4" ry="2.4" fill="var(--blush)" opacity=".8"/>
+    <path d="M36 57q4 3 8 0" stroke="var(--bear)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><svg aria-hidden="true"><use href="#bearface"/></svg>黑熊的後台</div>
+    <div class="account" id="account" hidden>
+      <span id="accountEmail"></span><span class="role" id="accountRole"></span>
+      <a href="./">看前台 ↗</a>
+      <button type="button" class="btn small" id="logoutBtn">登出</button>
+    </div>
+  </header>
+
+  <section class="gate" id="gate">
+    <svg aria-hidden="true"><use href="#bearface"/></svg>
+    <b>登入後台</b>
+    <p id="gateMsg">請用已授權的 Google 帳號登入。</p>
+    <div id="googleBtn"></div>
+  </section>
+
+  <main id="app" hidden>
+    <nav class="tabs" id="tabs" role="tablist"></nav>
+    <section id="panel"></section>
+  </main>
+</div>
+
+<dialog id="editor"><form method="dialog" id="editorForm" novalidate></form></dialog>
+<div id="toast" role="status" hidden></div>
+
+<script>
+const API_BASE=/^(localhost|127\.0\.0\.1)$/.test(location.hostname)?"http://127.0.0.1:5001":"https://taiwan-larp-backend.onrender.com";
+const GOOGLE_CLIENT_ID="593865088792-hircgnt15vfdeispj3f3qms7gnnpjh6q.apps.googleusercontent.com";
+// 後端發的 session token。只存在這台瀏覽器；登出或過期時清掉。
+const TOKEN_KEY="larpAdminSession";
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const getToken=()=>{try{return localStorage.getItem(TOKEN_KEY)}catch(e){return null}};
+const setToken=t=>{try{t?localStorage.setItem(TOKEN_KEY,t):localStorage.removeItem(TOKEN_KEY)}catch(e){}};
+
+let toastTimer=null;
+function toast(msg,isErr){const t=$("toast");t.textContent=msg;t.className=isErr?"err":"";t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.hidden=true,isErr?6000:2500)}
+
+class AuthError extends Error{}
+async function api(path,{method="GET",body}={}){
+  const headers={};const token=getToken();
+  if(token)headers.Authorization=`Bearer ${token}`;
+  if(body!==undefined)headers["Content-Type"]="application/json";
+  let res;
+  try{res=await fetch(API_BASE+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body)})}
+  catch(e){throw new Error("連不上後端，可能正在喚醒中，請稍後再試一次。")}
+  const data=await res.json().catch(()=>({}));
+  if(res.status===401){throw new AuthError(data.error||"登入已逾期，請重新登入。")}
+  if(!res.ok)throw new Error(data.error||`發生錯誤（${res.status}）`);
+  return data;
+}
+
+/* ===== 欄位定義：對應後端 content/resources.py ===== */
+const ENUM_LABELS={open:"營業中",closed:"已歇業",top:"上方",left:"左側",right:"右側",admin:"管理員",editor:"編輯者",active:"啟用",disabled:"停用"};
+const sortField={k:"sort_order",l:"排序",t:"int",hint:"數字越小越前面"};
+const RESOURCES={
+  stores:{label:"店家",cols:["city_id","store_type","name","address","status"],search:["name","address","note"],fields:[
+    {k:"city_id",l:"縣市",t:"fk",ref:"cities",req:1},
+    {k:"store_type",l:"類型",t:"enum",opts:["專門店","複合店"],req:1},
+    {k:"name",l:"店名",t:"text",req:1},
+    {k:"address",l:"地址",t:"text"},
+    {k:"url",l:"官網／預約網址",t:"text",hint:"http:// 或 https:// 開頭"},
+    {k:"note",l:"備註",t:"textarea",hint:"網址會自動變成連結"},
+    {k:"status",l:"營業狀態",t:"enum",opts:["open","closed"],req:1},
+    {k:"closed_date",l:"歇業日期",t:"date",hint:"已歇業才需要；不知道日期就留空，前台會顯示「已歇業」"},
+    sortField]},
+  cities:{label:"縣市",cols:["name","lon","lat","label_side"],search:["name"],fields:[
+    {k:"name",l:"縣市名稱",t:"text",req:1},
+    {k:"lon",l:"經度",t:"float",req:1,hint:"地圖上圓點的位置，例如臺北 121.53"},
+    {k:"lat",l:"緯度",t:"float",req:1,hint:"例如臺北 25.06"},
+    {k:"label_side",l:"地圖上縣市名稱的位置",t:"enum",opts:["left","right","top"],req:1},
+    sortField]},
+  hosts:{label:"私團主",cols:["region","name","contact","url"],search:["region","name","contact"],fields:[
+    {k:"region",l:"地區",t:"text",req:1,hint:"同樣的地區會分在同一組，例如「雙北」「雙北／桃園」"},
+    {k:"name",l:"名稱",t:"text",req:1},
+    {k:"contact",l:"聯絡方式",t:"textarea",hint:"第一行是連結的種類（IG、總表、網站、FB），之後每行是補充資訊"},
+    {k:"url",l:"連結",t:"text",hint:"http:// 或 https:// 開頭；IG 網址會自動顯示成 @帳號"},
+    sortField]},
+  "birthday-offers":{label:"壽星優惠",cols:["name","single_offer","group_offer","store_id"],search:["name","single_offer","group_offer","rules"],fields:[
+    {k:"name",l:"顯示名稱",t:"text",req:1},
+    {k:"store_id",l:"對應店家",t:"fknull",ref:"stores",hint:"選填，不影響前台顯示"},
+    {k:"single_offer",l:"單人優惠",t:"textarea"},
+    {k:"group_offer",l:"團體優惠",t:"textarea"},
+    {k:"requirements",l:"需要做的事",t:"list",hint:"每行一項，例如「社群發文」，前台顯示成「需社群發文」"},
+    {k:"rules",l:"規則",t:"textarea"},
+    {k:"is_closed",l:"已歇業",t:"bool"},
+    sortField]},
+  "food-policies":{label:"餐飲規範",cols:["name","provides_water","allows_drinks","allows_eating_in_room","allows_outside_trash","sells_food"],search:["name","note"],fields:[
+    {k:"name",l:"顯示名稱",t:"text",req:1},
+    {k:"store_id",l:"對應店家",t:"fknull",ref:"stores",hint:"選填，不影響前台顯示"},
+    {k:"provides_water",l:"提供水",t:"tri"},
+    {k:"allows_drinks",l:"可帶飲料",t:"tri"},
+    {k:"allows_eating_in_room",l:"包廂內飲食",t:"tri"},
+    {k:"allows_outside_trash",l:"可丟外食垃圾",t:"tri"},
+    {k:"sells_food",l:"店內售餐飲",t:"tri"},
+    {k:"note",l:"備註",t:"textarea"},
+    sortField]},
+  scripts:{label:"原創劇本",cols:["title","authors","venue","tags"],search:["title","authors","venue"],fields:[
+    {k:"title",l:"劇名",t:"text",req:1},
+    {k:"authors",l:"作者",t:"text"},
+    {k:"venue",l:"在哪玩",t:"text",hint:"含「整修中」「撰寫中」「已下架」「已歇業」等字會自動顯示對應狀態"},
+    {k:"venue_url",l:"在哪玩的連結",t:"text",hint:"選填，http:// 或 https:// 開頭"},
+    {k:"tags",l:"標籤",t:"list",hint:"每行一個，不用加 #"},
+    sortField]},
+};
+const TABS=[["stores","店家"],["cities","縣市"],["hosts","私團主"],["birthday-offers","壽星優惠"],["food-policies","餐飲規範"],["scripts","原創劇本"],["texts","頁面文字"],["users","使用者"]];
+
+let me=null, current="stores", rows=[], query="";
+const refs={cities:[],stores:[]};
+
+async function loadRefs(){
+  const [cities,stores]=await Promise.all([api("/api/admin/cities"),api("/api/admin/stores")]);
+  refs.cities=cities;refs.stores=stores;
+}
+const refName=(ref,id)=>{const r=refs[ref].find(x=>x.id===id);return r?r.name:""};
+
+function cellText(f,v){
+  if(f.t==="fk"||f.t==="fknull")return refName(f.ref,v)||(v==null?"":"(已刪除)");
+  if(f.t==="enum")return ENUM_LABELS[v]||v;
+  if(f.t==="tri")return v==null?"?":v?"✓":"—";
+  if(f.t==="bool")return v?"是":"";
+  if(f.t==="list")return(v||[]).join("、");
+  return v??"";
+}
+
+/* ===== 分頁 ===== */
+function renderTabs(){
+  $("tabs").innerHTML=TABS.filter(([k])=>k!=="users"||me.role==="admin")
+    .map(([k,l])=>`<button type="button" role="tab" data-k="${k}" aria-selected="${k===current}">${l}</button>`).join("");
+  $("tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>showTab(b.dataset.k));
+}
+async function showTab(k){
+  current=k;query="";renderTabs();
+  try{localStorage.setItem("larpAdminTab",k)}catch(e){}
+  $("panel").innerHTML=`<p class="empty">讀取中…</p>`;
+  try{
+    if(k==="texts")return await renderTexts();
+    if(k==="users")return await renderUsers();
+    await loadRefs();
+    rows=k==="cities"?refs.cities:k==="stores"?refs.stores:await api(`/api/admin/${k}`);
+    renderList();
+  }catch(e){handleError(e)}
+}
+
+/* ===== 內容列表 ===== */
+function renderList(){
+  const R=RESOURCES[current];
+  const byKey=Object.fromEntries(R.fields.map(f=>[f.k,f]));
+  const q=query.trim().toLowerCase();
+  const list=q?rows.filter(r=>R.search.some(k=>String(r[k]??"").toLowerCase().includes(q))):rows;
+  $("panel").innerHTML=`
+    <div class="toolbar"><h2>${R.label}</h2><span class="count">${q?`${list.length} / `:""}${rows.length} 筆</span>
+      <input class="search" type="search" id="q" placeholder="搜尋${R.label}" value="${esc(query)}"><span class="spacer"></span>
+      <button type="button" class="btn primary" id="addBtn">＋ 新增${R.label}</button></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>排序</th>${R.cols.map(c=>`<th>${esc(byKey[c].l)}</th>`).join("")}<th></th></tr></thead>
+      <tbody>${list.length?list.map(r=>`<tr class="${r.status==="closed"||r.is_closed?"dim":""}"><td class="num">${r.sort_order}</td>${
+        R.cols.map(c=>`<td><span class="clip" title="${esc(cellText(byKey[c],r[c]))}">${esc(cellText(byKey[c],r[c]))}</span></td>`).join("")
+      }<td class="actions"><button type="button" class="btn small" data-edit="${r.id}">編輯</button><button type="button" class="btn danger" data-del="${r.id}">刪除</button></td></tr>`).join("")
+      :`<tr><td colspan="${R.cols.length+2}" class="empty">沒有符合的資料</td></tr>`}</tbody>
+    </table></div>`;
+  const qEl=$("q");qEl.oninput=()=>{query=qEl.value;const pos=qEl.selectionStart;renderList();$("q").focus();$("q").setSelectionRange(pos,pos)};
+  $("addBtn").onclick=()=>openEditor(null);
+  $("panel").querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openEditor(rows.find(r=>r.id===+b.dataset.edit)));
+  $("panel").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>removeRow(rows.find(r=>r.id===+b.dataset.del)));
+}
+
+function fieldHtml(f,v){
+  const id=`f_${f.k}`;const lab=`<span>${esc(f.l)}${f.req?' <span class="req">*</span>':""}</span>`;const hint=f.hint?`<small>${esc(f.hint)}</small>`:"";
+  if(f.t==="bool")return `<label class="field check"><input type="checkbox" id="${id}" ${v?"checked":""}>${lab}</label>`;
+  let input;
+  if(f.t==="textarea")input=`<textarea id="${id}">${esc(v)}</textarea>`;
+  else if(f.t==="list")input=`<textarea id="${id}">${esc((v||[]).join("\n"))}</textarea>`;
+  else if(f.t==="enum")input=`<select id="${id}">${f.opts.map(o=>`<option value="${esc(o)}" ${o===v?"selected":""}>${esc(ENUM_LABELS[o]||o)}</option>`).join("")}</select>`;
+  else if(f.t==="tri")input=`<select id="${id}">${[["","?（未查到）"],["true","✓ 可以"],["false","— 不行"]].map(([o,l])=>`<option value="${o}" ${String(v??"")===o?"selected":""}>${l}</option>`).join("")}</select>`;
+  else if(f.t==="fk"||f.t==="fknull"){
+    const opts=refs[f.ref].map(r=>`<option value="${r.id}" ${r.id===v?"selected":""}>${esc(r.name)}</option>`).join("");
+    input=`<select id="${id}">${f.t==="fknull"?`<option value="">（不連結）</option>`:""}${opts}</select>`;
+  }
+  else if(f.t==="date")input=`<input type="date" id="${id}" value="${esc(v)}">`;
+  else if(f.t==="int"||f.t==="float")input=`<input type="number" id="${id}" step="${f.t==="int"?1:"any"}" value="${esc(v)}">`;
+  else input=`<input type="text" id="${id}" value="${esc(v)}">`;
+  return `<label class="field" for="${id}">${lab}${input}${hint}</label>`;
+}
+function readField(f){
+  const el=$(`f_${f.k}`);
+  if(f.t==="bool")return el.checked;
+  if(f.t==="list")return el.value.split("\n").map(s=>s.trim()).filter(Boolean);
+  if(f.t==="tri")return el.value===""?null:el.value==="true";
+  if(f.t==="fk"||f.t==="fknull")return el.value===""?null:+el.value;
+  if(f.t==="int"||f.t==="float")return el.value===""?null:+el.value;
+  if(f.t==="date")return el.value||null;
+  return el.value;
+}
+
+function openEditor(row){
+  const R=RESOURCES[current];const isNew=!row;
+  // 新增的資料預設排在最後
+  const values=row||{sort_order:rows.reduce((m,r)=>Math.max(m,r.sort_order),-1)+1};
+  $("editorForm").innerHTML=`<h3>${isNew?"新增":"編輯"}${R.label}</h3>
+    ${R.fields.map(f=>fieldHtml(f,values[f.k])).join("")}
+    <p class="form-err" id="formErr" hidden></p>
+    <div class="form-actions"><button type="button" class="btn" id="cancelBtn">取消</button><button type="submit" class="btn primary" id="saveBtn">儲存</button></div>`;
+  const status=$("f_status"),closed=$("f_closed_date");
+  if(status&&closed){const sync=()=>{closed.disabled=status.value!=="closed"};status.onchange=sync;sync()}
+  $("cancelBtn").onclick=()=>$("editor").close();
+  $("editorForm").onsubmit=async e=>{
+    e.preventDefault();
+    const body=Object.fromEntries(R.fields.map(f=>[f.k,readField(f)]));
+    $("saveBtn").disabled=true;
+    try{
+      if(isNew)await api(`/api/admin/${current}`,{method:"POST",body});
+      else await api(`/api/admin/${current}/${row.id}`,{method:"PUT",body});
+      $("editor").close();toast(`已儲存「${body.name||body.title}」`);await showTab(current);
+    }catch(err){
+      if(err instanceof AuthError){$("editor").close();return handleError(err)}
+      $("formErr").textContent=err.message;$("formErr").hidden=false;$("saveBtn").disabled=false;
+    }
+  };
+  $("editor").showModal();
+}
+
+async function removeRow(row){
+  const R=RESOURCES[current];const name=row.name||row.title;
+  if(!confirm(`確定要刪除${R.label}「${name}」嗎？刪除後無法復原。`))return;
+  try{await api(`/api/admin/${current}/${row.id}`,{method:"DELETE"});toast(`已刪除「${name}」`);await showTab(current)}
+  catch(e){handleError(e)}
+}
+
+/* ===== 頁面文字 ===== */
+async function renderTexts(){
+  const texts=await api("/api/admin-texts");
+  $("panel").innerHTML=`<div class="toolbar"><h2>頁面文字</h2></div><div class="texts">${texts.map(t=>`
+    <div class="textcard"><label for="t_${t.key}">${esc(t.description)}</label>
+      <textarea id="t_${t.key}">${esc(t.value)}</textarea>
+      <div class="form-actions"><small>${t.updated_by?`上次修改：${esc(t.updated_by)}`:""}</small><span class="spacer"></span><button type="button" class="btn primary small" data-save="${t.key}">儲存</button></div>
+    </div>`).join("")}</div>`;
+  $("panel").querySelectorAll("[data-save]").forEach(b=>b.onclick=async()=>{
+    try{await api(`/api/admin-texts/${b.dataset.save}`,{method:"PUT",body:{value:$(`t_${b.dataset.save}`).value}});toast("已儲存")}
+    catch(e){handleError(e)}
+  });
+}
+
+/* ===== 使用者（只有 admin） ===== */
+async function renderUsers(){
+  const users=await api("/api/admin-users");
+  $("panel").innerHTML=`
+    <div class="toolbar"><h2>使用者</h2><span class="count">${users.length} 位</span><span class="spacer"></span>
+      <button type="button" class="btn primary" id="addUser">＋ 新增使用者</button></div>
+    <p class="count" style="margin:-4px 0 12px">新增後台使用者時，也要把同一個 email 加進 Google Auth Platform 的「測試使用者」名單，否則對方無法完成 Google 登入。</p>
+    <div class="tablewrap"><table><thead><tr><th>Email</th><th>名稱</th><th>角色</th><th>狀態</th><th>最後登入</th><th></th></tr></thead>
+    <tbody>${users.map(u=>`<tr class="${u.status==="disabled"?"dim":""}"><td>${esc(u.email)}</td><td>${esc(u.name)}</td><td>${ENUM_LABELS[u.role]}</td><td>${ENUM_LABELS[u.status]}</td>
+      <td class="num">${u.last_login_at?new Date(u.last_login_at).toLocaleString("zh-TW"):"從未"}</td>
+      <td class="actions"><button type="button" class="btn small" data-uid="${u.id}">編輯</button></td></tr>`).join("")}</tbody></table></div>`;
+  $("addUser").onclick=()=>openUserEditor(null);
+  $("panel").querySelectorAll("[data-uid]").forEach(b=>b.onclick=()=>openUserEditor(users.find(u=>u.id===+b.dataset.uid)));
+}
+function openUserEditor(u){
+  const isNew=!u;const v=u||{role:"editor",status:"active"};
+  const sel=(k,opts)=>`<select id="u_${k}">${opts.map(o=>`<option value="${o}" ${v[k]===o?"selected":""}>${ENUM_LABELS[o]}</option>`).join("")}</select>`;
+  $("editorForm").innerHTML=`<h3>${isNew?"新增使用者":"編輯使用者"}</h3>
+    <label class="field"><span>Email <span class="req">*</span></span><input type="email" id="u_email" value="${esc(v.email)}" ${isNew?"":"disabled"}><small>對方登入用的 Google 帳號</small></label>
+    <label class="field"><span>名稱</span><input type="text" id="u_name" value="${esc(v.name)}"></label>
+    <label class="field"><span>角色</span>${sel("role",["editor","admin"])}<small>編輯者可以修改內容；管理員另外可以管理使用者</small></label>
+    ${isNew?"":`<label class="field"><span>狀態</span>${sel("status",["active","disabled"])}<small>停用後立即登出、無法再登入</small></label>`}
+    <p class="form-err" id="formErr" hidden></p>
+    <div class="form-actions"><button type="button" class="btn" id="cancelBtn">取消</button><button type="submit" class="btn primary" id="saveBtn">儲存</button></div>`;
+  $("cancelBtn").onclick=()=>$("editor").close();
+  $("editorForm").onsubmit=async e=>{
+    e.preventDefault();$("saveBtn").disabled=true;
+    const body={email:$("u_email").value.trim(),name:$("u_name").value.trim(),role:$("u_role").value,status:isNew?"active":$("u_status").value};
+    try{
+      if(isNew)await api("/api/admin-users",{method:"POST",body});else await api(`/api/admin-users/${u.id}`,{method:"PUT",body});
+      $("editor").close();toast("已儲存");await showTab("users");
+    }catch(err){
+      if(err instanceof AuthError){$("editor").close();return handleError(err)}
+      $("formErr").textContent=err.message;$("formErr").hidden=false;$("saveBtn").disabled=false;
+    }
+  };
+  $("editor").showModal();
+}
+
+/* ===== 登入 ===== */
+function handleError(e){
+  if(e instanceof AuthError){setToken(null);showGate(e.message,true);return}
+  toast(e.message,true);
+  if($("panel").querySelector(".empty")&&$("panel").textContent.includes("讀取中"))$("panel").innerHTML=`<p class="empty">${esc(e.message)}</p>`;
+}
+function showGate(msg,isErr){
+  me=null;$("app").hidden=true;$("account").hidden=true;$("gate").hidden=false;
+  $("gateMsg").textContent=msg||"請用已授權的 Google 帳號登入。";$("gateMsg").className=isErr?"err":"";
+  renderGoogleButton();
+}
+function renderGoogleButton(){
+  // Google 的 script 是非同步載入，還沒好就稍後再試
+  if(!window.google||!google.accounts){setTimeout(renderGoogleButton,200);return}
+  google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:onGoogleCredential});
+  google.accounts.id.renderButton($("googleBtn"),{theme:"outline",size:"large",shape:"pill",text:"signin_with",locale:"zh-TW"});
+}
+async function onGoogleCredential(resp){
+  $("gateMsg").textContent="登入中…";$("gateMsg").className="";
+  try{
+    const r=await api("/auth/login",{method:"POST",body:{id_token:resp.credential}});
+    setToken(r.session_token);await enterApp();
+  }catch(e){
+    // 403：Google 登入成功，但這個帳號不在使用者列表裡
+    showGate(e.message.includes("授權")?`${e.message}。請聯絡管理員把你的 email 加進使用者列表。`:e.message,true);
+  }
+}
+async function enterApp(){
+  // 連不上後端（例如 Render 正在喚醒）不代表登入失效，保留 token，重新整理就會再試一次
+  try{me=await api("/auth/status")}catch(e){return e instanceof AuthError?handleError(e):showGate(e.message,true)}
+  $("gate").hidden=true;$("app").hidden=false;$("account").hidden=false;
+  $("accountEmail").textContent=me.email;$("accountRole").textContent=ENUM_LABELS[me.role];
+  let start="stores";try{start=localStorage.getItem("larpAdminTab")||start}catch(e){}
+  if(!TABS.some(([k])=>k===start)||(start==="users"&&me.role!=="admin"))start="stores";
+  await showTab(start);
+}
+$("logoutBtn").onclick=async()=>{
+  try{await api("/auth/logout",{method:"POST"})}catch(e){}
+  setToken(null);if(window.google&&google.accounts)google.accounts.id.disableAutoSelect();
+  showGate("已登出。");
+};
+
+if(getToken())enterApp();else showGate();
+</script>
+</body>
+</html>
