@@ -53,6 +53,8 @@
 index.html          前台（樣式、畫面、互動程式都在這一個檔案）
 admin.html          後台（同樣是單一檔案）
 assets/bear.jpg     黑熊主視覺圖片（頁首大圖、頁尾頭像共用）
+assets/favicon-32.png、assets/apple-touch-icon.png
+                    分頁圖示與手機加到主畫面的圖示，由主視覺圖只裁頭部做成（整隻熊縮到 32px 臉會看不清楚）
 ```
 
 ### 已知限制
@@ -160,6 +162,8 @@ How it was verified (2026-10-16, locally): using a temporary admin session, ever
 index.html          The public site (styles, markup, and interaction code all in this one file)
 admin.html          The admin interface (also a single file)
 assets/bear.jpg     The bear hero image (shared by the header image and the footer avatar)
+assets/favicon-32.png, assets/apple-touch-icon.png
+                    The tab icon and the home-screen icon, cropped from the hero image to just the head (at 32px the whole bear's face becomes illegible)
 ```
 
 ### Known Limitations
