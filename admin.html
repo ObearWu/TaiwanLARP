@@ -88,6 +88,15 @@ tr.dim td{opacity:.55}
 .textcard{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:14px 16px;display:grid;gap:8px}
 .textcard label{font-weight:700}
 .textcard small{color:var(--muted)}
+.report{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:12px 16px;display:grid;gap:8px}
+.report.dim{opacity:.6}
+.report-head{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;font-size:13px;color:var(--muted)}
+.report-head b{font-size:15px;color:var(--ink)}
+.report-msg{white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.report-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.report-row select{padding:5px 10px;border:2px solid var(--line);border-radius:12px;background:var(--bg)}
+.report-row input{flex:1;min-width:180px;padding:5px 12px;border:2px solid var(--line);border-radius:12px;background:var(--bg)}
+.badge-new{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--cherry);color:#fff;margin-left:4px}
 
 /* 編輯表單 */
 dialog{border:3px solid var(--caramel);border-radius:24px;background:var(--paper);color:var(--ink);padding:0;width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 32px)}
@@ -232,7 +241,7 @@ const RESOURCES={
     {k:"tags",l:"標籤",t:"list",hint:"每行一個，不用加 #"},
     sortField]},
 };
-const TABS=[["stores","店家"],["cities","縣市"],["hosts","私團主"],["birthday-offers","壽星優惠"],["food-policies","餐飲規範"],["scripts","原創劇本"],["texts","頁面文字"],["users","使用者"]];
+const TABS=[["stores","店家"],["cities","縣市"],["hosts","私團主"],["birthday-offers","壽星優惠"],["food-policies","餐飲規範"],["scripts","原創劇本"],["reports","回報"],["texts","頁面文字"],["users","使用者"]];
 
 let me=null, current="stores", rows=[], query="";
 const refs={cities:[],stores:[]};
@@ -264,6 +273,7 @@ async function showTab(k){
   $("panel").innerHTML=`<p class="empty">讀取中…</p>`;
   try{
     if(k==="texts")return await renderTexts();
+    if(k==="reports")return await renderReports();
     if(k==="users")return await renderUsers();
     await loadRefs();
     rows=k==="cities"?refs.cities:k==="stores"?refs.stores:await api(`/api/admin/${k}`);
@@ -354,6 +364,43 @@ async function removeRow(row){
   if(!confirm(`確定要刪除${R.label}「${name}」嗎？刪除後無法復原。`))return;
   try{await api(`/api/admin/${current}/${row.id}`,{method:"DELETE"});toast(`已刪除「${name}」`);await showTab(current)}
   catch(e){handleError(e)}
+}
+
+/* ===== 訪客回報 ===== */
+const REPORT_CATEGORIES={stores:"店家",hosts:"私團主","birthday-offers":"壽星優惠","food-policies":"餐飲規範",scripts:"原創劇本",other:"其他"};
+const REPORT_STATUSES=[["new","新回報"],["in_progress","處理中"],["done","已處理"],["rejected","不處理"]];
+let reportFilter="open";
+async function renderReports(){
+  const all=await api("/api/admin-reports");
+  const list=reportFilter==="open"?all.filter(r=>r.status==="new"||r.status==="in_progress"):all;
+  const openCount=all.filter(r=>r.status==="new"||r.status==="in_progress").length;
+  $("panel").innerHTML=`
+    <div class="toolbar"><h2>訪客回報</h2><span class="count">未處理 ${openCount} 則／共 ${all.length} 則</span><span class="spacer"></span>
+      <select id="rFilter" class="btn"><option value="open" ${reportFilter==="open"?"selected":""}>只看未處理</option><option value="all" ${reportFilter==="all"?"selected":""}>全部</option></select></div>
+    <div class="texts">${list.length?list.map(r=>`
+      <div class="report ${r.status==="done"||r.status==="rejected"?"dim":""}">
+        <div class="report-head"><b>${esc(REPORT_CATEGORIES[r.category]||r.category)}${r.item?`：${esc(r.item)}`:""}</b>
+          <span>#${r.id}・${new Date(r.created_at).toLocaleString("zh-TW")}</span>${r.contact?`<span>聯絡：${esc(r.contact)}</span>`:""}</div>
+        <p class="report-msg">${esc(r.message)}</p>
+        <div class="report-row">
+          <select data-status="${r.id}">${REPORT_STATUSES.map(([v,l])=>`<option value="${v}" ${v===r.status?"selected":""}>${l}</option>`).join("")}</select>
+          <input data-note="${r.id}" value="${esc(r.admin_note)}" placeholder="內部備註（訪客看不到）">
+          <button type="button" class="btn primary small" data-rsave="${r.id}">儲存</button>
+          <button type="button" class="btn danger" data-rdel="${r.id}">刪除</button>
+        </div>
+        ${r.updated_by?`<small class="count">上次處理：${esc(r.updated_by)}</small>`:""}
+      </div>`).join(""):`<p class="empty">${reportFilter==="open"?"沒有未處理的回報 🎉":"還沒有任何回報"}</p>`}</div>`;
+  $("rFilter").onchange=()=>{reportFilter=$("rFilter").value;showTab("reports")};
+  $("panel").querySelectorAll("[data-rsave]").forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.rsave;
+    try{await api(`/api/admin-reports/${id}`,{method:"PUT",body:{status:$("panel").querySelector(`[data-status="${id}"]`).value,admin_note:$("panel").querySelector(`[data-note="${id}"]`).value}});toast("已儲存");await showTab("reports")}
+    catch(e){handleError(e)}
+  });
+  $("panel").querySelectorAll("[data-rdel]").forEach(b=>b.onclick=async()=>{
+    if(!confirm(`確定要刪除回報 #${b.dataset.rdel} 嗎？刪除後無法復原。`))return;
+    try{await api(`/api/admin-reports/${b.dataset.rdel}`,{method:"DELETE"});toast("已刪除");await showTab("reports")}
+    catch(e){handleError(e)}
+  });
 }
 
 /* ===== 頁面文字 ===== */

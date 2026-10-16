@@ -170,6 +170,17 @@ tr:last-child td{border-bottom:0}
 .modal-card p{margin:0;font-size:14px;line-height:1.7}
 .modal-card a{font-weight:700}
 .modal-bear{width:60px;height:60px}
+.modal-card.wide{width:min(440px,100%);max-height:calc(100vh - 32px);overflow-y:auto}
+.fix-form{display:grid;gap:10px;width:100%;text-align:left}
+.fix-form label{display:grid;gap:3px;font-size:13px;font-weight:500;color:var(--ink)}
+.fix-form label small{font-weight:400;color:var(--muted)}
+.fix-form select,.fix-form input,.fix-form textarea{font:inherit;font-size:14px;width:100%;padding:8px 12px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
+.fix-form textarea{min-height:96px;resize:vertical}
+.fix-form .trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.fix-err{color:var(--cherry);font-size:13px;margin:0}
+.fix-actions{display:flex;justify-content:center;gap:8px;padding-top:2px}
+.modal-cancel{font:inherit;font-family:var(--display);font-size:15px;background:none;border:2px solid var(--line);color:var(--ink);border-radius:999px;padding:5px 22px;cursor:pointer}
+.modal-close:disabled{opacity:.6;cursor:default}
 .modal-close{font:inherit;font-family:var(--display);font-size:15px;background:var(--custard);color:var(--bear);border:0;border-radius:999px;padding:7px 26px;cursor:pointer}
 @media (prefers-reduced-motion:no-preference){.modal:not([hidden]) .modal-card{animation:pop .25s cubic-bezier(.3,1.5,.5,1)}}
 @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
@@ -299,11 +310,28 @@ footer b{font-family:var(--display);font-weight:400;font-size:17px;color:var(--i
 </div>
 
 <div class="modal" id="fixModal" hidden>
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="fixTitle">
+  <div class="modal-card wide" role="dialog" aria-modal="true" aria-labelledby="fixTitle">
     <svg class="modal-bear" aria-hidden="true"><use href="#bearface"/></svg>
     <b id="fixTitle">資料有誤？告訴黑熊</b>
-    <p>如有誤植需要調整，請透過 LINE 或 IG 與黑熊聯絡：<a href="https://www.instagram.com/obear.tw/" target="_blank" rel="noopener">IG @obear.tw ↗</a></p>
-    <button type="button" class="modal-close" id="fixClose">知道了</button>
+    <form class="fix-form" id="fixForm" novalidate>
+      <label>哪一類資料
+        <select id="fixCategory">
+          <option value="stores">店家</option><option value="hosts">私團主</option><option value="birthday-offers">壽星優惠</option>
+          <option value="food-policies">餐飲規範</option><option value="scripts">臺灣原創劇本</option><option value="other">其他</option>
+        </select>
+      </label>
+      <label>哪一筆 <small>選填，例如店名、劇名</small><input id="fixItem" maxlength="200" autocomplete="off"></label>
+      <label>哪裡有誤？<textarea id="fixMessage" maxlength="2000" placeholder="例如：地址搬到○○路了、已經歇業了、優惠內容改了"></textarea></label>
+      <label>你的聯絡方式 <small>選填，IG 或 email，方便黑熊回覆你</small><input id="fixContact" maxlength="200" autocomplete="off"></label>
+      <label class="trap" aria-hidden="true">請勿填寫<input id="fixWebsite" tabindex="-1" autocomplete="off"></label>
+      <p class="fix-err" id="fixErr" hidden></p>
+      <div class="fix-actions"><button type="button" class="modal-cancel" id="fixCancel">取消</button><button type="submit" class="modal-close" id="fixSend">送出</button></div>
+    </form>
+    <div id="fixDone" hidden>
+      <p>收到了，謝謝你！黑熊會盡快確認並更新。</p>
+    </div>
+    <p>也可以透過 LINE 或 IG 與黑熊聯絡：<a href="https://www.instagram.com/obear.tw/" target="_blank" rel="noopener">IG @obear.tw ↗</a></p>
+    <button type="button" class="modal-close" id="fixClose" hidden>知道了</button>
   </div>
 </div>
 
@@ -350,7 +378,29 @@ tabs.forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 let start=(location.hash||"").slice(1);try{start=start||localStorage.getItem("larpTab")}catch(e){}
 if(start&&tabs.some(b=>b.dataset.tab===start))showTab(start);
 const fixModal=$("fixModal");let lastFocus=null;
-const openFix=e=>{lastFocus=e&&e.currentTarget;fixModal.hidden=false;$("fixClose").focus()};
+// 回報表單：預設選目前所在分頁的資料類別
+const TAB_CATEGORY={stores:"stores",hosts:"hosts",bday:"birthday-offers",food:"food-policies",scripts:"scripts"};
+const openFix=e=>{
+  lastFocus=e&&e.currentTarget;
+  const tab=(document.querySelector('#tabs button[aria-selected="true"]')||{}).dataset;
+  $("fixForm").reset();$("fixCategory").value=TAB_CATEGORY[tab&&tab.tab]||"other";
+  $("fixErr").hidden=true;$("fixForm").hidden=false;$("fixDone").hidden=true;$("fixClose").hidden=true;$("fixSend").disabled=false;
+  fixModal.hidden=false;$("fixItem").focus();
+};
+$("fixForm").onsubmit=async ev=>{
+  ev.preventDefault();
+  const showErr=m=>{$("fixErr").textContent=m;$("fixErr").hidden=false};
+  if($("fixMessage").value.trim().length<5)return showErr("請描述一下哪裡有誤（至少 5 個字）");
+  $("fixSend").disabled=true;$("fixErr").hidden=true;
+  try{
+    const r=await fetch(`${API_BASE}/api/public/reports`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+      category:$("fixCategory").value,item:$("fixItem").value,message:$("fixMessage").value,contact:$("fixContact").value,website:$("fixWebsite").value})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||"送出失敗，請稍後再試，或直接到 IG 告訴黑熊。");
+    $("fixForm").hidden=true;$("fixDone").hidden=false;$("fixClose").hidden=false;$("fixClose").focus();
+  }catch(err){showErr(err.message==="Failed to fetch"?"連不上伺服器，請稍後再試，或直接到 IG 告訴黑熊。":err.message);$("fixSend").disabled=false}
+};
+$("fixCancel").onclick=()=>closeFix();
 const closeFix=()=>{fixModal.hidden=true;lastFocus&&lastFocus.focus()};
 $("toContact").onclick=openFix;document.querySelectorAll(".jump").forEach(b=>b.onclick=openFix);
 $("fixClose").onclick=closeFix;fixModal.addEventListener("click",e=>{if(e.target===fixModal)closeFix()});

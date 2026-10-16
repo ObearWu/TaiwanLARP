@@ -43,6 +43,10 @@
 
 驗證方式（2026-10-16，本機）：用一組臨時的管理員 session 實際操作每個分頁——新增、編輯、搜尋、刪除，以及空白必填欄位、錯誤網址、刪除使用中的縣市、停用自己這幾種該被擋下的情況，並確認改動確實出現在 `/api/public/all`；手機寬度（375px）沒有整頁橫向捲動、深色模式正常。測試資料事後全部刪除，並重新比對資料庫內容與原始資料完全一致。真正的 Google 登入需要網站擁有者本人操作。
 
+### 訪客回報表單
+
+每個分頁底部的「告訴黑熊」（以及頁首的「資料有誤？告訴黑熊」）原本只跳出一個 IG 連結，現在是回報表單：哪一類資料（預設選目前所在的分頁）、哪一筆（選填）、哪裡有誤（至少 5 個字）、聯絡方式（選填），送到後端 `POST /api/public/reports`，成功後顯示「收到了，謝謝你！」。IG 連結保留在表單下方。表單裡有一個看不到的陷阱欄位，用來擋機器人。後台多了「回報」分頁，可以標記狀態、寫內部備註、刪除；預設只顯示未處理的回報。寄信與防灌水的細節見後端 README。
+
 ### API 網址怎麼決定
 
 `index.html` 裡的 `API_BASE`：網址是 `localhost` 或 `127.0.0.1`（本機測試）時打 `http://127.0.0.1:5001`，其他情況打 Render 上的正式後端。
@@ -151,6 +155,10 @@ The data now arrives with the API response, so there's a loading state: until th
 - **Deliberate safeguards**: a city that still has stores can't be deleted; you can't disable yourself or remove your own admin role; disabled users are signed out immediately.
 
 How it was verified (2026-10-16, locally): using a temporary admin session, every tab was exercised for real — add, edit, search, delete, plus the cases that should be blocked (blank required fields, a bad URL, deleting a city in use, disabling yourself) — confirming each change showed up in `/api/public/all`; at phone width (375px) the page doesn't scroll sideways, and dark mode works. All test data was deleted afterward, and the database was re-compared against the original data and matched exactly. Real Google sign-in has to be done by the site owner in person.
+
+### The Visitor Report Form
+
+The "告訴黑熊" (tell the bear) link at the bottom of every tab (and "資料有誤？告訴黑熊" in the header) used to open just an Instagram link; it now opens a report form: which kind of data (defaulting to the current tab), which entry (optional), what's wrong (at least 5 characters), and contact info (optional). It posts to the backend's `POST /api/public/reports` and shows "收到了，謝謝你！" (got it, thank you!) on success. The Instagram link stays below the form. The form has an invisible honeypot field to stop bots. The admin interface gained a "回報" (reports) tab for setting status, writing internal notes, and deleting; by default it shows only unresolved reports. See the backend README for email sending and anti-spam details.
 
 ### How the API URL Is Chosen
 
