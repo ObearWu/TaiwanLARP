@@ -75,10 +75,10 @@ python app.py
 
 ```bash
 cd TaiwanLARP/web
-python3 -m http.server 8000 --bind 127.0.0.1
+python3 -m http.server 8000
 ```
 
-瀏覽器打開 `http://127.0.0.1:8000/`，應該看到完整的網站。
+瀏覽器打開 `http://localhost:8000/`，應該看到完整的網站。用 `localhost` 而不是 `127.0.0.1`：後台的 Google 登入不接受 IP 位址當來源。
 
 > 註：不能直接雙擊 `index.html` 用 `file://` 打開——那樣頁面沒有正常的來源（Origin 是 `null`），後端的 CORS 設定會擋下 API 請求，畫面會停在「黑熊搬資料時跌倒了」。
 
@@ -170,10 +170,10 @@ Open another terminal:
 
 ```bash
 cd TaiwanLARP/web
-python3 -m http.server 8000 --bind 127.0.0.1
+python3 -m http.server 8000
 ```
 
-Open `http://127.0.0.1:8000/` in a browser and you should see the full site.
+Open `http://localhost:8000/` in a browser and you should see the full site. Use `localhost`, not `127.0.0.1`: Google sign-in on the admin page doesn't accept an IP address as an origin.
 
 > Note: you can't just double-click `index.html` and open it via `file://` — that gives the page no real origin (its Origin is `null`), the backend's CORS settings block the API request, and the page gets stuck on "黑熊搬資料時跌倒了".
 
