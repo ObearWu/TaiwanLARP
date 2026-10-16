@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>臺灣劇本殺哪裡玩？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: 黑熊愛吃布丁 — custard-cream page, caramel-capped pudding tabs, soft rounded "pudding cup" cards, bear mascot in hero */
+:root{
+  --bg:#fff4d6; --paper:#fffcf3; --ink:#2b2118; --muted:#7b6550; --line:#f1dca3;
+  --caramel:#b25d17; --caramel-deep:#8a4310; --custard:#ffd35c; --custard-soft:#ffe9a6;
+  --soft:#fde4c0; --tag:#fbefcc; --land:#ffe7a0; --ok:#4c7a35; --ok-soft:#e5f0d6;
+  --bear:#1d1611; --muzzle:#d9a46a; --blush:#f4a7a0; --cherry:#d9433b; --on-accent:#fffcf3;
+  --display:"Huninn","jf open 粉圓","PingFang TC","Microsoft JhengHei",sans-serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1f1812; --paper:#2a2019; --ink:#fbeed3; --muted:#c7ad8d; --line:#47372a;
+  --caramel:#f0a04b; --caramel-deep:#ffbf75; --custard:#e9b93c; --custard-soft:#4a3a1c;
+  --soft:#3e2b1b; --tag:#34281e; --land:#3b2d20; --ok:#a3cf84; --ok-soft:#263020;
+  --bear:#120d0a; --muzzle:#c99059; --blush:#d9827a; --cherry:#e0574e; --on-accent:#1f1812; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1f1812; --paper:#2a2019; --ink:#fbeed3; --muted:#c7ad8d; --line:#47372a;
+  --caramel:#f0a04b; --caramel-deep:#ffbf75; --custard:#e9b93c; --custard-soft:#4a3a1c;
+  --soft:#3e2b1b; --tag:#34281e; --land:#3b2d20; --ok:#a3cf84; --ok-soft:#263020;
+  --bear:#120d0a; --muzzle:#c99059; --blush:#d9827a; --cherry:#e0574e; --on-accent:#1f1812; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.65}
+a{color:var(--caramel)}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:20px 110px}
+
+/* hero */
+header.hero{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;align-items:center;padding-block:12px 4px}
+.hello{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-size:14px;color:var(--caramel-deep);background:var(--custard-soft);padding:4px 14px;border-radius:999px;justify-self:start}
+.hero-text{display:grid;gap:12px;min-width:0}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,7vw,60px);line-height:1.15;margin:0;text-wrap:balance;letter-spacing:.02em}
+h1 .q{color:var(--caramel);display:inline-block}
+.lede{color:var(--muted);max-width:56ch;margin:0}
+.stats{display:flex;flex-wrap:wrap;gap:10px}
+.stat{background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:6px 14px;font-size:13px;color:var(--muted)}
+.stat b{font-family:var(--display);font-weight:400;font-size:22px;color:var(--caramel);margin-right:4px;font-variant-numeric:tabular-nums}
+.hero-art{width:100%;max-width:280px;height:auto;justify-self:center;border-radius:42% 58% 52% 48% / 46% 44% 56% 54%;border:5px solid var(--paper);box-shadow:0 10px 0 var(--custard-soft);transform:rotate(2deg)}
+.foot-av{width:68px;height:68px;flex:none;border-radius:50%;border:3px solid var(--paper);background:var(--bearimg) 50% 18%/190% no-repeat}
+.drip{display:block;width:100%;height:28px;margin-top:8px}
+.drip path{fill:var(--caramel)}
+
+/* tabs: pudding cups with caramel caps */
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:8px;overflow-x:auto;padding-block:12px;scrollbar-width:none}
+nav.tabs button{flex:none;display:inline-flex;align-items:center;gap:6px;font:inherit;font-family:var(--display);font-size:15px;background:var(--paper);border:2px solid var(--line);border-top-width:5px;color:var(--muted);padding:6px 16px 7px;border-radius:14px 14px 20px 20px;cursor:pointer;transition:transform .15s}
+nav.tabs button[aria-selected="true"]{background:var(--custard);border-color:var(--custard);border-top-color:var(--caramel);color:var(--bear)}
+nav.tabs button:hover:not([aria-selected="true"]){color:var(--ink);border-top-color:var(--custard)}
+.ico{width:18px;height:18px;flex:none}
+button:focus-visible,input:focus-visible,a:focus-visible,#twmap .city:focus-visible{outline:3px solid var(--caramel);outline-offset:2px}
+
+section{padding-top:20px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 16px;margin-bottom:14px}
+h2{font-family:var(--display);font-weight:400;font-size:28px;margin:0;display:flex;align-items:center;gap:10px}
+h2 .ico{width:30px;height:30px}
+.meta{font-size:13px;color:var(--muted)}
+.controls{display:grid;gap:10px;margin-bottom:16px}
+.search{width:100%;font:inherit;padding:11px 18px;border:2px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink)}
+.search::placeholder{color:var(--muted)}
+.search:focus{border-color:var(--custard)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;padding:4px 13px;border-radius:999px;border:2px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--caramel);border-color:var(--caramel);color:var(--on-accent)}
+.chip .n{font-size:11px;opacity:.75;margin-left:4px;font-variant-numeric:tabular-nums}
+.toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
+.toggle input{accent-color:var(--caramel)}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:16px 18px;display:grid;gap:6px;align-content:start;min-width:0;transition:transform .2s cubic-bezier(.3,1.6,.5,1),border-color .2s}
+.card.closed{opacity:.55}
+.card-top{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.card h3{font-size:16px;font-weight:700;margin:0;line-height:1.45}
+.badge{flex:none;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--tag);color:var(--muted);white-space:nowrap}
+.badge.special{background:var(--custard);color:var(--bear)}
+.badge.dead{background:var(--bear);color:#fbeed3}
+.badge.ok{background:var(--ok-soft);color:var(--ok)}
+.addr{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.note{font-size:13px;background:var(--tag);padding:7px 12px;border-radius:12px;overflow-wrap:anywhere}
+.links{display:flex;gap:8px;font-size:13px;font-weight:500;margin-top:2px}
+.links a{text-decoration:none;background:var(--soft);color:var(--caramel-deep);padding:3px 12px;border-radius:999px}
+.links a:hover{background:var(--custard);color:var(--bear)}
+.city-label{font-family:var(--display);font-size:13px;color:var(--caramel)}
+.empty{grid-column:1/-1;padding:36px 0;text-align:center;color:var(--muted);display:grid;justify-items:center;gap:8px}
+.empty svg{width:72px;height:72px}
+
+/* hosts */
+.group-h{font-family:var(--display);font-weight:400;font-size:21px;margin:22px 0 10px;display:flex;align-items:baseline;gap:10px}
+.group-h small{font-family:var(--body);font-size:12px;color:var(--muted)}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.person{text-decoration:none;color:inherit;transition:border-color .15s,transform .2s;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:10px 14px;min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;gap:0 10px;align-items:center;align-content:center}
+.person .av{grid-row:span 2;width:34px;height:34px;border-radius:50%;background:var(--custard);color:var(--bear);display:grid;place-items:center;font-family:var(--display);font-size:15px}
+.person b{font-size:15px;line-height:1.3;overflow-wrap:anywhere;align-self:end}
+a.person:hover{border-color:var(--custard);transform:translateY(-2px)}
+.person .go{color:var(--caramel);font-weight:700}
+.person > span:last-child{align-self:start;line-height:1.5}
+.person span{font-size:12px;color:var(--muted);white-space:pre-line;overflow-wrap:anywhere}
+
+/* birthday */
+.callout{display:flex;gap:12px;align-items:center;background:var(--custard-soft);border-radius:18px;padding:12px 16px;font-size:13px;color:var(--ink);margin-bottom:16px}
+.callout svg{width:42px;height:42px;flex:none}
+.bday{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.offers{display:grid;gap:10px}
+.offer{font-size:14px;white-space:pre-line}
+.offer small{display:inline-block;font-size:11px;font-weight:700;color:var(--caramel-deep);background:var(--soft);padding:1px 8px;border-radius:999px;margin-bottom:4px}
+.reqs{display:flex;flex-wrap:wrap;gap:6px}
+.req{font-size:12px;padding:2px 10px;border-radius:999px;background:var(--ok-soft);color:var(--ok);font-weight:500}
+.rule{font-size:13px;color:var(--muted);white-space:pre-line;border-top:2px dotted var(--line);padding-top:8px}
+
+/* food table */
+.tablewrap{overflow-x:auto;background:var(--paper);border:2px solid var(--line);border-radius:22px}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14px}
+th,td{padding:11px 14px;text-align:left;border-bottom:2px dotted var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:400;font-size:14px;color:var(--caramel-deep);white-space:nowrap;background:var(--custard-soft)}
+td.c{text-align:center}
+.yes{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--custard);color:var(--bear);font-weight:700;font-size:13px}
+.no{color:var(--muted)}
+tr:last-child td{border-bottom:0}
+
+/* scripts */
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:12px;color:var(--caramel-deep);background:var(--soft);padding:1px 9px;border-radius:999px}
+
+/* map */
+.store-layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:24px;align-items:start}
+.store-main{min-width:0}
+.mapbox{position:sticky;top:calc(env(safe-area-inset-top,0px) + 72px);background:var(--paper);border:2px solid var(--line);border-radius:26px;padding:14px 12px 12px;display:grid;gap:6px}
+.mapbox-head{display:flex;justify-content:space-between;align-items:baseline;padding-inline:6px}
+.mapbox-head b{font-family:var(--display);font-weight:400;font-size:18px}
+.mapbox-head button{font:inherit;font-size:12px;background:none;border:0;color:var(--caramel);cursor:pointer;padding:0}
+#twmap{width:100%;height:auto;max-height:calc(100vh - 160px);display:block;margin:0 auto}
+#twmap .land{fill:var(--land);stroke:var(--custard);stroke-width:3;stroke-linejoin:round}
+#twmap .sea-label{fill:var(--muted);font-family:var(--display);font-size:14px;letter-spacing:.2em}
+#twmap .city{cursor:pointer;outline:none}
+#twmap .city circle{fill:var(--caramel);stroke:var(--paper);stroke-width:3;transition:opacity .15s}
+#twmap .city .num{fill:var(--on-accent);font-family:var(--display);font-size:15px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+#twmap .city .name{fill:var(--ink);font-family:var(--display);font-size:17px;dominant-baseline:central}
+#twmap .city.dim circle{opacity:.3}
+#twmap .city.dim .name{fill:var(--muted)}
+#twmap .city.on circle{stroke:var(--custard);stroke-width:5}
+#twmap .city:hover circle{stroke:var(--custard)}
+#twmap .city.empty{display:none}
+.maphint{font-size:12px;color:var(--muted);padding-inline:6px}
+
+.fix-link{justify-self:start;font:inherit;font-size:13px;background:none;border:0;padding:0;color:var(--caramel);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.contact{color:var(--ink)}
+.contact .lineid{font-family:var(--display);font-weight:400}
+.copy{font:inherit;font-size:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:0 10px;cursor:pointer;margin-left:4px}
+.footnote{margin-top:14px;font-size:13px;color:var(--muted)}
+.footnote button{font:inherit;background:none;border:0;padding:0;color:var(--caramel);text-decoration:underline;cursor:pointer}
+#toTop{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;display:grid;justify-items:center;gap:2px;padding:8px 12px 7px;border:3px solid var(--caramel);border-radius:22px 22px 28px 28px;background:var(--paper);color:var(--caramel-deep);font:inherit;font-family:var(--display);font-size:13px;line-height:1.2;cursor:pointer;box-shadow:0 6px 0 var(--custard-soft);opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .25s,transform .25s}
+#toTop.show{opacity:1;transform:none;pointer-events:auto}
+#toTop svg{width:40px;height:40px}
+#toTop:hover{background:var(--custard-soft)}
+#toTop:active svg{transform:scale(.92)}
+@media (prefers-reduced-motion:no-preference){#toTop.show:hover svg{animation:jiggle .6s ease-in-out}}
+@keyframes jiggle{0%,100%{transform:scale(1)}30%{transform:scaleX(1.12) scaleY(.88)}60%{transform:scaleX(.94) scaleY(1.06)}}
+.modal[hidden]{display:none}
+.modal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(31,24,18,.45)}
+.modal-card{width:min(360px,100%);background:var(--paper);border:3px solid var(--caramel);border-radius:26px 26px 32px 32px;padding:22px 20px 18px;display:grid;justify-items:center;gap:10px;text-align:center;box-shadow:0 8px 0 var(--custard-soft)}
+.modal-card b{font-family:var(--display);font-weight:400;font-size:20px}
+.modal-card p{margin:0;font-size:14px;line-height:1.7}
+.modal-card a{font-weight:700}
+.modal-bear{width:60px;height:60px}
+.modal-close{font:inherit;font-family:var(--display);font-size:15px;background:var(--custard);color:var(--bear);border:0;border-radius:999px;padding:7px 26px;cursor:pointer}
+@media (prefers-reduced-motion:no-preference){.modal:not([hidden]) .modal-card{animation:pop .25s cubic-bezier(.3,1.5,.5,1)}}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+footer{margin-top:56px;padding:20px;border-radius:26px;background:var(--custard-soft);font-size:13px;color:var(--muted);display:flex;gap:16px;align-items:center}
+footer svg{width:64px;height:64px;flex:none}
+footer div{display:grid;gap:2px;min-width:0}
+footer b{font-family:var(--display);font-weight:400;font-size:17px;color:var(--ink)}
+
+@media (prefers-reduced-motion:no-preference){
+  .card:hover{transform:translateY(-3px) rotate(-.4deg);border-color:var(--custard)}
+  .hero-art{animation:bob 4s ease-in-out infinite}
+}
+@keyframes bob{0%,100%{transform:rotate(2deg) translateY(0)}50%{transform:rotate(-1deg) translateY(-6px)}}
+@media (max-width:760px){
+  header.hero{grid-template-columns:1fr}.hero-art{max-width:190px;grid-row:1}
+  .store-layout{grid-template-columns:1fr}.mapbox{position:static}#twmap{max-height:400px}
+  .bday{grid-template-columns:1fr}
+}
+@media (max-width:520px){.grid{grid-template-columns:1fr}h2{font-size:24px}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="pud" viewBox="0 0 32 32">
+    <ellipse cx="16" cy="28" rx="13" ry="2.6" fill="var(--line)"/>
+    <path d="M9 11h14l3 16H6z" fill="var(--custard)"/>
+    <path d="M9 11h14l.7 4c-1.6 0-1.6 2.6-3.2 2.6S18.9 15 17.3 15s-1.6 3.4-3.2 3.4S12.5 15 10.9 15s-1.4 1.6-2.6 1.6z" fill="var(--caramel)"/>
+    <circle cx="16" cy="8.5" r="3" fill="var(--cherry)"/>
+  </symbol>
+  <symbol id="bearface" viewBox="0 0 80 80">
+    <circle cx="18" cy="20" r="11" fill="var(--bear)"/><circle cx="62" cy="20" r="11" fill="var(--bear)"/>
+    <circle cx="18" cy="20" r="5" fill="var(--muzzle)"/><circle cx="62" cy="20" r="5" fill="var(--muzzle)"/>
+    <circle cx="40" cy="44" r="30" fill="var(--bear)"/>
+    <ellipse cx="40" cy="54" rx="14" ry="10" fill="var(--muzzle)"/>
+    <ellipse cx="40" cy="49" rx="5" ry="3.5" fill="var(--bear)"/>
+    <circle cx="29" cy="38" r="3.2" fill="#fffcf3"/><circle cx="51" cy="38" r="3.2" fill="#fffcf3"/>
+    <circle cx="29.6" cy="38.6" r="1.7" fill="var(--bear)"/><circle cx="51.6" cy="38.6" r="1.7" fill="var(--bear)"/>
+    <ellipse cx="21" cy="50" rx="4" ry="2.4" fill="var(--blush)" opacity=".8"/><ellipse cx="59" cy="50" rx="4" ry="2.4" fill="var(--blush)" opacity=".8"/>
+    <path d="M36 57q4 3 8 0" stroke="var(--bear)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-text">
+      <span class="hello"><svg class="ico"><use href="#pud"/></svg>黑熊的劇本殺口袋名單</span>
+      <h1>臺灣劇本殺<br><span class="q">哪裡玩？</span></h1>
+      <p class="lede">一隻愛吃布丁的黑熊，把全臺正版劇本殺店家、私團主、壽星優惠和原創劇本都挖出來了。發現店家用盜版劇本，請偷偷告訴黑熊。</p>
+      <div class="stats" id="stats"></div>
+      <button type="button" class="fix-link" id="toContact">資料有誤？告訴黑熊</button>
+    </div>
+    <img class="hero-art" src="assets/bear.jpg" alt="黑熊 Obear 穿著紅色背心、手捧焦糖布丁的形象圖" width="560" height="560">
+  </header>
+  <svg class="drip" viewBox="0 0 1000 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0h1000v6c-20 0-20 14-40 14s-18-12-40-12-22 18-46 18-22-16-44-16-20 8-40 8-22-10-44-10-20 16-42 16-22-14-44-14-20 6-40 6-20-10-42-10-22 20-46 20-22-16-44-16-20 8-40 8-22-12-44-12-20 14-42 14-22-10-44-10-20 6-40 6-22-12-42-12-24 18-46 18-22-14-44-14-20 8-40 8-22-12-44-12-20 10-40 10-22-8-44-8-20 14-42 14-24-14-44-14-18 6-40 6S20 6 0 6z"/></svg>
+
+  <nav class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-tab="stores" aria-selected="true"><svg class="ico"><use href="#pud"/></svg>店家列表</button>
+    <button role="tab" data-tab="hosts" aria-selected="false"><svg class="ico"><use href="#pud"/></svg>私團主</button>
+    <button role="tab" data-tab="bday" aria-selected="false"><svg class="ico"><use href="#pud"/></svg>壽星優惠</button>
+    <button role="tab" data-tab="food" aria-selected="false"><svg class="ico"><use href="#pud"/></svg>餐飲規範</button>
+    <button role="tab" data-tab="scripts" aria-selected="false"><svg class="ico"><use href="#pud"/></svg>臺灣原創劇本</button>
+  </nav>
+
+  <section id="stores" role="tabpanel">
+    <div class="sec-head"><h2><svg class="ico"><use href="#bearface"/></svg>店家列表</h2><span class="meta">專門店：只有劇本殺包廂｜複合店：另有桌遊、密室等服務</span></div>
+    <div class="store-layout">
+      <aside class="mapbox" aria-label="店家縣市分布圖">
+        <div class="mapbox-head"><b id="mapTitle">全臺分布</b><button id="mapReset" type="button" hidden>看全部縣市</button></div>
+        <svg id="twmap" viewBox="0 0 410 650" role="group" aria-label="臺灣劇本殺店家分布"></svg>
+        <div class="maphint">焦糖圓點越大，店家越多。點縣市就能篩選。</div>
+      </aside>
+      <div class="store-main">
+        <div class="controls">
+          <input id="storeQ" class="search" type="search" placeholder="搜尋店名、地址或區域，例如：中山區、衛斯理">
+          <div class="chips" id="cityChips"></div>
+          <div class="chips" id="typeChips"></div>
+          <label class="toggle"><input type="checkbox" id="showClosed"> 顯示已歇業店家</label>
+        </div>
+        <div class="grid" id="storeGrid"></div>
+      </div>
+    </div>
+    <p class="footnote">資訊有誤或已變動？<button type="button" class="jump">告訴黑熊</button></p>
+  </section>
+
+  <section id="hosts" role="tabpanel" hidden>
+    <div class="sec-head"><h2><svg class="ico"><use href="#bearface"/></svg>私團主列表</h2><span class="meta">私人開團的主持人，點名片就能前往他的 IG、總表或網站</span></div>
+    <input id="hostQ" class="search" type="search" placeholder="搜尋私團主名稱或地區">
+    <div id="hostList"></div>
+    <p class="footnote">資訊有誤或已變動？<button type="button" class="jump">告訴黑熊</button></p>
+  </section>
+
+  <section id="bday" role="tabpanel" hidden>
+    <div class="sec-head"><h2><svg class="ico"><use href="#bearface"/></svg>店家壽星優惠</h2><span class="meta" id="bdayMeta"></span></div>
+    <div class="callout"><svg><use href="#pud"/></svg><span>壽星最大！優惠不定期更新，最終以店家公告為準，預約前記得再跟店家確認一次。已歇業的店家不再列出。</span></div>
+    <div class="bday" id="bdayList"></div>
+    <p class="meta" style="margin-top:16px" id="bdayNoOffer"></p>
+    <p class="footnote">資訊有誤或已變動？<button type="button" class="jump">告訴黑熊</button></p>
+  </section>
+
+  <section id="food" role="tabpanel" hidden>
+    <div class="sec-head"><h2><svg class="ico"><use href="#bearface"/></svg>店家餐飲規範</h2><span class="meta" id="foodMeta"></span></div>
+    <div class="callout"><svg><use href="#pud"/></svg><span>想帶布丁進包廂之前，先看看這家店能不能吃東西。</span></div>
+    <div class="tablewrap"><table id="foodTable"></table></div>
+    <p class="footnote">資訊有誤或已變動？<button type="button" class="jump">告訴黑熊</button></p>
+  </section>
+
+  <section id="scripts" role="tabpanel" hidden>
+    <div class="sec-head"><h2><svg class="ico"><use href="#bearface"/></svg>臺灣原創劇本</h2><span class="meta">作者想刊登或更新作品，撰寫中的也可以，請聯繫黑熊</span></div>
+    <div class="controls">
+      <input id="scriptQ" class="search" type="search" placeholder="搜尋劇本、作者或店家">
+      <div class="chips" id="tagChips"></div>
+    </div>
+    <div class="grid" id="scriptGrid"></div>
+    <p class="footnote">資訊有誤或已變動？<button type="button" class="jump">告訴黑熊</button></p>
+  </section>
+
+  <footer>
+    <span class="foot-av" role="img" aria-label="黑熊 Obear"></span>
+    <div>
+      <b>整理：黑熊 Obear</b>
+      <span>Podcast《上班喝什麼？》主持人，劇本殺玩家，布丁愛好者</span>
+      <span id="contact" class="contact">如有誤植需要調整，請透過 LINE 或 IG 與黑熊聯絡：<a href="https://www.instagram.com/obear.tw/" target="_blank" rel="noopener">IG @obear.tw ↗</a></span>
+      <span>資料來源：<a href="https://docs.google.com/spreadsheets/d/1eC8NUSsa9-vG0JxYk9GoNFJ5uxBixnA02Z78z3x1p28/edit?usp=sharing" target="_blank" rel="noopener">臺灣劇本殺哪裡玩？（Google 試算表）</a></span>
+    </div>
+  </footer>
+</div>
+
+<div class="modal" id="fixModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="fixTitle">
+    <svg class="modal-bear" aria-hidden="true"><use href="#bearface"/></svg>
+    <b id="fixTitle">資料有誤？告訴黑熊</b>
+    <p>如有誤植需要調整，請透過 LINE 或 IG 與黑熊聯絡：<a href="https://www.instagram.com/obear.tw/" target="_blank" rel="noopener">IG @obear.tw ↗</a></p>
+    <button type="button" class="modal-close" id="fixClose">知道了</button>
+  </div>
+</div>
+
+<button type="button" id="toTop" aria-label="回到頁面最上方"><svg aria-hidden="true"><use href="#pud"/></svg><span>回到最上面</span></button>
+
+<script>
+// 資料改由後端 API 提供（原本寫死在這裡）。API 回傳的欄位格式跟原本的陣列一模一樣，
+// 所以下面畫面與互動的程式都不用改，只是等資料到了才開始執行（見 start()）。
+const API_BASE=/^(localhost|127\.0\.0\.1)$/.test(location.hostname)?"http://127.0.0.1:5001":"https://taiwan-larp-backend.onrender.com";
+let STORES,CITY_ORDER,CITY_POS,HOST_URLS,HOSTS,BDAY,FOOD,SCRIPTS;
+const loadingState=msg=>`<div class="empty"><svg><use href="#bearface"/></svg><span>${msg}</span></div>`;
+function showLoading(msg){
+  ["storeGrid","hostList","bdayList","scriptGrid"].forEach(id=>document.getElementById(id).innerHTML=loadingState(msg));
+  document.getElementById("foodTable").innerHTML=`<tbody><tr><td class="meta">${msg}</td></tr></tbody>`;
+}
+showLoading("黑熊正在搬資料，請稍候…");
+fetch(`${API_BASE}/api/public/all`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
+  STORES=d.stores;CITY_ORDER=d.cityOrder;CITY_POS=d.cityPos;BDAY=d.bday;FOOD=d.food;SCRIPTS=d.scripts;
+  HOSTS=d.hosts.map(h=>[h.region,h.name,h.contact]);HOST_URLS=d.hosts.map(h=>h.url);
+  document.getElementById("bdayMeta").textContent=d.texts.bday_meta;
+  document.getElementById("bdayNoOffer").textContent=d.texts.bday_no_offer;
+  document.getElementById("foodMeta").textContent=d.texts.food_meta;
+  start();
+}).catch(()=>showLoading("黑熊搬資料時跌倒了，請稍後重新整理頁面。"));
+
+function start(){
+
+document.documentElement.style.setProperty('--bearimg',`url(${document.querySelector('.hero-art').src})`);
+
+
+
+
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const linkify=s=>esc(s).replace(/https?:\/\/[^\s，）]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u.replace(/^https?:\/\//,"")}</a>`);
+const $=id=>document.getElementById(id);
+const emptyState=msg=>`<div class="empty"><svg><use href="#bearface"/></svg><span>${msg}</span></div>`;
+const open=STORES.filter(s=>!s.closed);
+$("stats").innerHTML=`<span class="stat"><b>${open.length}</b>間營業中</span><span class="stat"><b>${new Set(open.map(s=>s.city)).size}</b>個縣市</span><span class="stat"><b>${HOSTS.length}</b>位私團主</span><span class="stat"><b>${SCRIPTS.length}</b>部原創劇本</span>`;
+
+/* tabs */
+const tabs=[...document.querySelectorAll("#tabs button")];
+function showTab(id){tabs.forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===id));document.querySelectorAll("section[role=tabpanel]").forEach(s=>s.hidden=s.id!==id);try{localStorage.setItem("larpTab",id)}catch(e){}}
+tabs.forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+let start=(location.hash||"").slice(1);try{start=start||localStorage.getItem("larpTab")}catch(e){}
+if(start&&tabs.some(b=>b.dataset.tab===start))showTab(start);
+const fixModal=$("fixModal");let lastFocus=null;
+const openFix=e=>{lastFocus=e&&e.currentTarget;fixModal.hidden=false;$("fixClose").focus()};
+const closeFix=()=>{fixModal.hidden=true;lastFocus&&lastFocus.focus()};
+$("toContact").onclick=openFix;document.querySelectorAll(".jump").forEach(b=>b.onclick=openFix);
+$("fixClose").onclick=closeFix;fixModal.addEventListener("click",e=>{if(e.target===fixModal)closeFix()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!fixModal.hidden)closeFix()});
+
+/* map: simplified coastline (lon,lat), equirectangular with cos(lat) correction */
+const COAST=[[121.53,25.30],[121.74,25.15],[121.92,25.12],[121.83,24.86],[121.86,24.60],[121.80,24.45],[121.70,24.20],[121.62,23.98],[121.52,23.60],[121.38,23.10],[121.17,22.78],[120.90,22.35],[120.87,22.05],[120.85,21.90],[120.73,21.93],[120.60,22.37],[120.45,22.46],[120.27,22.62],[120.25,22.75],[120.15,23.00],[120.08,23.15],[120.15,23.38],[120.15,23.45],[120.20,23.78],[120.40,24.07],[120.50,24.27],[120.58,24.38],[120.68,24.50],[120.92,24.80],[120.95,24.88],[121.10,25.05],[121.30,25.13],[121.40,25.18],[121.50,25.27]];
+const px=lon=>60+(lon-119.95)*165, py=lat=>(25.4-lat)*180+20;
+const svgNS="http://www.w3.org/2000/svg";
+const map=$("twmap");
+map.innerHTML=`<path class="land" d="M${COAST.map(([a,b])=>px(a).toFixed(1)+","+py(b).toFixed(1)).join("L")}Z"/><text class="sea-label" x="36" y="330">臺灣海峽</text><text class="sea-label" x="300" y="520">太平洋</text>`;
+const cityG={};
+CITY_ORDER.forEach(c=>{
+  const g=document.createElementNS(svgNS,"g");g.setAttribute("class","city");g.setAttribute("tabindex","0");g.setAttribute("role","button");
+  g.innerHTML=`<circle/><text class="num"></text><text class="name">${c}</text>`;
+  const pick=()=>{city=city===c?"全部":c;renderStores()};
+  g.addEventListener("click",pick);g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick()}});
+  map.appendChild(g);cityG[c]=g;
+});
+function drawMap(pool){
+  const counts={};pool.forEach(s=>counts[s.city]=(counts[s.city]||0)+1);
+  const max=Math.max(1,...Object.values(counts));
+  CITY_ORDER.forEach(c=>{
+    const g=cityG[c],n=counts[c]||0,[lon,lat,side]=CITY_POS[c],x=px(lon),y=py(lat);
+    const r=n?9+18*Math.sqrt(n/max):0;
+    g.classList.toggle("empty",!n);g.classList.toggle("on",city===c);g.classList.toggle("dim",city!=="全部"&&city!==c);
+    g.setAttribute("aria-label",`${c} ${n} 間`);g.setAttribute("aria-pressed",city===c);
+    const [ci,num,name]=g.children;
+    ci.setAttribute("cx",x);ci.setAttribute("cy",y);ci.setAttribute("r",r);
+    num.setAttribute("x",x);num.setAttribute("y",y);num.textContent=n;
+    if(side==="top"){name.setAttribute("x",x);name.setAttribute("y",y-r-11);name.setAttribute("text-anchor","middle")}
+    else if(side==="right"){name.setAttribute("x",x+r+6);name.setAttribute("y",y);name.setAttribute("text-anchor","start")}
+    else{name.setAttribute("x",x-r-6);name.setAttribute("y",y);name.setAttribute("text-anchor","end")}
+  });
+  $("mapTitle").textContent=city==="全部"?`全臺分布・${pool.length} 間`:`${city}・${counts[city]||0} 間`;
+  $("mapReset").hidden=city==="全部";
+}
+$("mapReset").onclick=()=>{city="全部";renderStores()};
+
+/* stores */
+let city="全部",type="全部";
+function chips(el,items,cur,set){el.innerHTML=items.map(([k,n])=>`<button class="chip" aria-pressed="${k===cur}" data-k="${esc(k)}">${esc(k)}${n!=null?`<span class="n">${n}</span>`:""}</button>`).join("");el.querySelectorAll("button").forEach(b=>b.onclick=()=>{set(b.dataset.k)})}
+function renderStores(){
+  const q=$("storeQ").value.trim(),showC=$("showClosed").checked;
+  const pool=STORES.filter(s=>showC||!s.closed);
+  chips($("cityChips"),[["全部",pool.length],...CITY_ORDER.map(c=>[c,pool.filter(s=>s.city===c).length])],city,k=>{city=k;renderStores()});
+  chips($("typeChips"),[["全部"],["專門店"],["複合店"]],type,k=>{type=k;renderStores()});
+  drawMap(pool.filter(s=>type==="全部"||s.type===type));
+  const list=pool.filter(s=>(city==="全部"||s.city===city)&&(type==="全部"||s.type===type)&&(!q||(s.name+s.addr+s.note+s.city).includes(q)))
+    .sort((a,b)=>CITY_ORDER.indexOf(a.city)-CITY_ORDER.indexOf(b.city)||(!!a.closed-!!b.closed));
+  $("storeGrid").innerHTML=list.length?list.map(s=>`<article class="card${s.closed?" closed":""}">
+    <div class="city-label">${s.city}</div>
+    <div class="card-top"><h3>${esc(s.name)}</h3><span class="badge ${s.closed?"dead":s.type==="專門店"?"special":""}">${s.closed?(s.closed==="已歇業"?"已歇業":s.closed+" 歇業"):s.type}</span></div>
+    <div class="addr">${esc(s.addr)}</div>
+    ${s.note?`<div class="note">${linkify(s.note)}</div>`:""}
+    <div class="links">${s.url&&!s.closed?`<a href="${esc(s.url)}" target="_blank" rel="noopener">官網／預約 ↗</a>`:""}${s.addr!=="多館"?`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.addr)}" target="_blank" rel="noopener">地圖 ↗</a>`:""}</div>
+  </article>`).join(""):emptyState("黑熊翻遍冰箱，沒找到符合的店家。換個關鍵字或縣市試試看。");
+}
+$("storeQ").oninput=renderStores;$("showClosed").onchange=renderStores;renderStores();
+
+/* hosts */
+function hostCard(h){
+  const url=HOST_URLS[HOSTS.indexOf(h)]||"";
+  const lines=h[2].split("\n").map(x=>x.trim()).filter(Boolean);
+  const kind=lines[0];const extra=lines.slice(1).join("\n");
+  let label=kind;
+  const ig=url.match(/instagram\.com\/([^/?]+)/);
+  if(ig)label="IG @"+ig[1];
+  const inner=`<span class="av">${esc([...h[1]][0].toUpperCase())}</span><b>${esc(h[1])}</b><span><span class="go">${esc(label)}${url?" ↗":""}</span>${extra?"\n"+esc(extra):""}</span>`;
+  return url?`<a class="person" href="${esc(url)}" target="_blank" rel="noopener" title="開啟 ${esc(h[1])} 的${esc(kind)}">${inner}</a>`:`<div class="person">${inner}</div>`;
+}
+function renderHosts(){
+  const q=$("hostQ").value.trim();const groups={};
+  HOSTS.filter(h=>!q||(h[0]+h[1]+h[2]).toLowerCase().includes(q.toLowerCase())).forEach(h=>(groups[h[0]]=groups[h[0]]||[]).push(h));
+  const keys=Object.keys(groups);
+  $("hostList").innerHTML=keys.length?keys.map(k=>`<h3 class="group-h">${k}<small>${groups[k].length} 位</small></h3><div class="people">${groups[k].map(h=>hostCard(h)).join("")}</div>`).join(""):emptyState("找不到這位私團主。");
+}
+$("hostQ").oninput=renderHosts;renderHosts();
+
+/* birthday */
+$("bdayList").innerHTML=BDAY.map(b=>`<article class="card${b.closed?" closed":""}">
+  <div class="card-top"><h3>${esc(b.n)}</h3>${b.closed?`<span class="badge dead">已歇業</span>`:""}</div>
+  <div class="offers">${b.s?`<div class="offer"><small>單人優惠</small><br>${esc(b.s)}</div>`:""}${b.g?`<div class="offer"><small>團體優惠</small><br>${esc(b.g)}</div>`:""}</div>
+  ${b.req?`<div class="reqs">${b.req.map(r=>`<span class="req">需${r}</span>`).join("")}</div>`:""}
+  ${b.r?`<div class="rule">${esc(b.r)}</div>`:""}
+</article>`).join("");
+
+/* food */
+const mark=v=>v==null?`<span class="no" aria-label="未查到">?</span>`:v?`<span class="yes" aria-label="可以">✓</span>`:`<span class="no" aria-label="不行">—</span>`;
+$("foodTable").innerHTML=`<thead><tr><th>店家</th><th>提供水</th><th>可帶飲料</th><th>包廂內飲食</th><th>可丟外食垃圾</th><th>店內售餐飲</th><th>備註</th></tr></thead><tbody>${FOOD.map(f=>`<tr><td><b>${esc(f[0])}</b></td>${f.slice(1,6).map(v=>`<td class="c">${mark(v)}</td>`).join("")}<td class="meta">${esc(f[6])}</td></tr>`).join("")}</tbody>`;
+
+/* scripts */
+let tag="全部";
+const allTags=[...new Set(SCRIPTS.flatMap(s=>s.tags))];
+const tagCount=t=>SCRIPTS.filter(s=>s.tags.includes(t)).length;
+allTags.sort((a,b)=>tagCount(b)-tagCount(a));
+function statusOf(w){if(!w)return["未標註",""];if(/整修中/.test(w))return["整修中",""];if(/撰寫中/.test(w))return["撰寫中","special"];if(/已下架|已歇業/.test(w))return["已下架","dead"];return["可體驗","ok"]}
+function renderScripts(){
+  chips($("tagChips"),[["全部",SCRIPTS.length],...allTags.map(t=>[t,tagCount(t)])],tag,k=>{tag=k;renderScripts()});
+  const q=$("scriptQ").value.trim();
+  const list=SCRIPTS.filter(s=>(tag==="全部"||s.tags.includes(tag))&&(!q||(s.n+s.a+s.w+s.tags.join("")).includes(q)));
+  $("scriptGrid").innerHTML=list.length?list.map(s=>{const[st,cls]=statusOf(s.w);const [wt,wu]=s.w.split("|");
+    return `<article class="card"><div class="card-top"><h3>${esc(s.n)}</h3><span class="badge ${cls}">${st}</span></div>
+    <div class="addr">作者｜${esc(s.a)}</div>
+    ${wt?`<div class="addr">在哪玩｜${wu?`<a href="${esc(wu)}" target="_blank" rel="noopener">${esc(wt)} ↗</a>`:esc(wt)}</div>`:""}
+    ${s.tags.length?`<div class="tags">${s.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}</div>`:""}</article>`}).join(""):emptyState("這個口味的劇本還沒有，晚點再來看看。");
+}
+$("scriptQ").oninput=renderScripts;renderScripts();
+/* back-to-top pudding */
+const toTop=$("toTop");
+const onScroll=()=>toTop.classList.toggle("show",window.scrollY>500);
+window.addEventListener("scroll",onScroll,{passive:true});onScroll();
+toTop.onclick=()=>{const rm=matchMedia("(prefers-reduced-motion: reduce)").matches;window.scrollTo({top:0,behavior:rm?"auto":"smooth"})};
+}
+</script>
+
+</body>
+</html>
