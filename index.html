@@ -5,6 +5,21 @@
 <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>臺灣劇本殺哪裡玩？</title>
+<script>
+// Google Analytics 4（評估 ID G-0PV9BPW86P）。只在正式網址載入，本機測試的點擊不會混進報表；
+// 本機改把事件記在 window.__events 並印在 console，方便檢查。後台 admin.html 刻意不裝。
+window.dataLayer=window.dataLayer||[];
+window.GA_ON=location.hostname==="obearwu.github.io";
+function gtag(){dataLayer.push(arguments)}
+if(GA_ON){
+  const s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id=G-0PV9BPW86P";document.head.appendChild(s);
+  gtag("js",new Date());gtag("config","G-0PV9BPW86P");
+}
+// 自訂事件。回報表單填的內容與聯絡方式一律不送出，只記類別。
+function track(name,params){
+  try{ if(GA_ON) gtag("event",name,params||{}); else {(window.__events=window.__events||[]).push([name,params||{}]);console.debug("[track]",name,params||{});} }catch(e){}
+}
+</script>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -288,6 +303,7 @@ footer b{font-family:var(--display);font-weight:400;font-size:17px;color:var(--i
       <b>整理：黑熊 Obear</b>
       <span>Podcast《上班喝什麼？》主持人，劇本殺玩家，布丁愛好者</span>
       <span id="contact" class="contact">如有誤植需要調整，請透過 LINE 或 IG 與黑熊聯絡：<a href="https://www.instagram.com/obear.tw/" target="_blank" rel="noopener">IG @obear.tw ↗</a></span>
+      <span>本站使用 Google Analytics 了解網站使用情況，不會收集可識別個人身分的資訊。</span>
       <span>資料來源：<a href="https://docs.google.com/spreadsheets/d/1eC8NUSsa9-vG0JxYk9GoNFJ5uxBixnA02Z78z3x1p28/edit?usp=sharing" target="_blank" rel="noopener">臺灣劇本殺哪裡玩？（Google 試算表）</a></span>
     </div>
   </footer>
@@ -337,7 +353,7 @@ fetch(`${API_BASE}/api/public/all`).then(r=>{if(!r.ok)throw new Error(r.status);
   HOSTS=d.hosts.map(h=>[h.region,h.name,h.contact]);HOST_URLS=d.hosts.map(h=>h.url);
   document.getElementById("foodMeta").textContent=d.texts.food_meta;
   start();
-}).catch(()=>showLoading("黑熊搬資料時跌倒了，請稍後重新整理頁面。"));
+}).catch(err=>{track("data_load_error",{error_status:String(err&&err.message||"network")});showLoading("黑熊搬資料時跌倒了，請稍後重新整理頁面。")});
 
 function start(){
 
@@ -355,10 +371,11 @@ $("stats").innerHTML=`<span class="stat"><b>${open.length}</b>間營業中</span
 
 /* tabs */
 const tabs=[...document.querySelectorAll("#tabs button")];
-function showTab(id){tabs.forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===id));document.querySelectorAll("section[role=tabpanel]").forEach(s=>s.hidden=s.id!==id);try{localStorage.setItem("larpTab",id)}catch(e){}}
+const TAB_NAMES={stores:"店家列表",hosts:"私團主",food:"餐飲規範",scripts:"臺灣原創劇本"};
+function showTab(id,initial){track("tab_view",{tab_name:TAB_NAMES[id]||id,initial:!!initial});tabs.forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===id));document.querySelectorAll("section[role=tabpanel]").forEach(s=>s.hidden=s.id!==id);try{localStorage.setItem("larpTab",id)}catch(e){}}
 tabs.forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 let start=(location.hash||"").slice(1);try{start=start||localStorage.getItem("larpTab")}catch(e){}
-if(start&&tabs.some(b=>b.dataset.tab===start))showTab(start);
+if(start&&tabs.some(b=>b.dataset.tab===start))showTab(start,true);else track("tab_view",{tab_name:TAB_NAMES.stores,initial:true});
 const fixModal=$("fixModal");let lastFocus=null;
 // 回報表單：預設選目前所在分頁的資料類別
 const TAB_CATEGORY={stores:"stores",hosts:"hosts",food:"food-policies",scripts:"scripts"};
@@ -368,6 +385,7 @@ const openFix=e=>{
   $("fixForm").reset();$("fixCategory").value=TAB_CATEGORY[tab&&tab.tab]||"other";
   $("fixErr").hidden=true;$("fixForm").hidden=false;$("fixDone").hidden=true;$("fixClose").hidden=true;$("fixSend").disabled=false;
   fixModal.hidden=false;$("fixItem").focus();
+  track("report_open",{tab_name:TAB_NAMES[tab&&tab.tab]||"其他"});
 };
 $("fixForm").onsubmit=async ev=>{
   ev.preventDefault();
@@ -379,6 +397,7 @@ $("fixForm").onsubmit=async ev=>{
       category:$("fixCategory").value,item:$("fixItem").value,message:$("fixMessage").value,contact:$("fixContact").value,website:$("fixWebsite").value})});
     const d=await r.json().catch(()=>({}));
     if(!r.ok)throw new Error(d.error||"送出失敗，請稍後再試，或直接到 IG 告訴黑熊。");
+    track("report_submit",{report_category:$("fixCategory").options[$("fixCategory").selectedIndex].text});
     $("fixForm").hidden=true;$("fixDone").hidden=false;$("fixClose").hidden=false;$("fixClose").focus();
   }catch(err){showErr(err.message==="Failed to fetch"?"連不上伺服器，請稍後再試，或直接到 IG 告訴黑熊。":err.message);$("fixSend").disabled=false}
 };
@@ -488,6 +507,39 @@ const toTop=$("toTop");
 const onScroll=()=>toTop.classList.toggle("show",window.scrollY>500);
 window.addEventListener("scroll",onScroll,{passive:true});onScroll();
 toTop.onclick=()=>{const rm=matchMedia("(prefers-reduced-motion: reduce)").matches;window.scrollTo({top:0,behavior:rm?"auto":"smooth"})};
+
+/* analytics：只觀察，不改變任何畫面行為 */
+// 搜尋：停止輸入 1 秒、至少 2 個字才記一次；搜尋後沒有結果另外記，當作「該補資料」的參考
+[["storeQ","店家列表","#storeGrid article"],["hostQ","私團主","#hostList .person"],["scriptQ","臺灣原創劇本","#scriptGrid article"]].forEach(([id,tabName,sel])=>{
+  let timer=null;
+  $(id).addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(()=>{
+    const term=$(id).value.trim();if(term.length<2)return;
+    const n=document.querySelectorAll(sel).length;
+    track("search",{search_term:term,tab_name:tabName,result_count:n});
+    if(!n)track("search_no_result",{search_term:term,tab_name:tabName});
+  },1000)});
+});
+// 篩選：縣市、類型、劇本標籤的按鈕會重畫，所以掛在外層容器上
+[["cityChips","city"],["typeChips","store_type"],["tagChips","script_tag"]].forEach(([id,type])=>{
+  $(id).addEventListener("click",e=>{const b=e.target.closest(".chip");if(b)track("filter_select",{filter_type:type,filter_value:b.dataset.k})});
+});
+$("showClosed").addEventListener("change",()=>track("filter_select",{filter_type:"show_closed",filter_value:$("showClosed").checked?"on":"off"}));
+$("twmap").addEventListener("click",e=>{const g=e.target.closest(".city");if(g)track("filter_select",{filter_type:"map_city",filter_value:g.querySelector(".name").textContent})});
+// 外連點擊：店家官網／地圖、私團主、劇本連結、IG
+document.addEventListener("click",e=>{
+  const a=e.target.closest("a[href]");if(!a)return;
+  const card=a.closest("article");
+  if(a.closest("#storeGrid")&&card){
+    track("store_link_click",{store_name:card.querySelector("h3").textContent,city:(card.querySelector(".city-label")||{}).textContent||"",link_type:a.textContent.includes("地圖")?"map":"website"});
+  }else if(a.closest("#hostList")){
+    const grp=a.closest(".people");const h=grp&&grp.previousElementSibling;
+    track("host_link_click",{host_name:(a.querySelector("b")||{}).textContent||"",region:h?h.firstChild.textContent.trim():""});
+  }else if(a.closest("#scriptGrid")&&card){
+    track("script_link_click",{script_title:card.querySelector("h3").textContent});
+  }else if(a.href.includes("instagram.com/obear.tw")){
+    track("contact_ig_click",{source:a.closest("#fixModal")?"report_modal":"footer"});
+  }
+});
 }
 </script>
 
