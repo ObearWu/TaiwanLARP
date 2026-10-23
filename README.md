@@ -15,7 +15,7 @@
 
 ### 這是什麼
 
-全臺劇本殺資訊整理網站的前台：店家列表（含縣市分布地圖）、私團主、壽星優惠、餐飲規範、臺灣原創劇本五個分頁。純 vanilla JavaScript，沒有框架、沒有建置流程，直接把檔案交給 GitHub Pages 服務。
+全臺劇本殺資訊整理網站的前台：店家列表（含縣市分布地圖）、私團主、餐飲規範、臺灣原創劇本四個分頁。原本還有「壽星優惠」分頁，2026-10-23 從前台拿掉（資料仍留在資料庫，後台的壽星優惠分頁照常可以編輯，要恢復只需要把前台的分頁加回來）。純 vanilla JavaScript，沒有框架、沒有建置流程，直接把檔案交給 GitHub Pages 服務。
 
 ### 只換資料來源，畫面完全不變
 
@@ -128,7 +128,7 @@ The two parts are deliberately separate and shouldn't be read interleaved: the r
 
 ### What This Is
 
-The public site for a collection of LARP (murder mystery / 劇本殺) information across Taiwan, with five tabs: stores (with a map of their distribution by city), private hosts, birthday deals, food and drink rules, and original Taiwanese scripts. Pure vanilla JavaScript — no framework, no build step; the files are handed straight to GitHub Pages.
+The public site for a collection of LARP (murder mystery / 劇本殺) information across Taiwan, with four tabs: stores (with a map of their distribution by city), private hosts, food and drink rules, and original Taiwanese scripts. Pure vanilla JavaScript — no framework, no build step; the files are handed straight to GitHub Pages. There used to be a "birthday deals" (壽星優惠) tab too; it was removed from the public site on 2026-10-23 (the data stays in the database and the admin interface's birthday-deals tab still edits it, so restoring it only means adding the tab back to the public page).
 
 ### Only the Data Source Changed; the Page Looks Exactly the Same
 
