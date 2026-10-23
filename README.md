@@ -47,6 +47,26 @@
 
 每個分頁底部的「告訴黑熊」（以及頁首的「資料有誤？告訴黑熊」）原本只跳出一個 IG 連結，現在是回報表單：哪一類資料（預設選目前所在的分頁）、哪一筆（選填）、哪裡有誤（至少 5 個字）、聯絡方式（選填），送到後端 `POST /api/public/reports`，成功後顯示「收到了，謝謝你！」。IG 連結保留在表單下方。表單裡有一個看不到的陷阱欄位，用來擋機器人。後台多了「回報」分頁，可以標記狀態、寫內部備註、刪除；預設只顯示未處理的回報。寄信與防灌水的細節見後端 README。
 
+### 流量與使用軌跡（Google Analytics 4）
+
+前台裝了 GA4（評估 ID `G-0PV9BPW86P`，GA 帳戶「obear」底下的資源「臺灣劇本殺哪裡玩？」），只在正式網址 `obearwu.github.io` 載入；本機測試時事件改記在 `window.__events` 並印在 console，不會混進報表。後台 `admin.html` 刻意不裝，管理員自己的操作不會算進數據。
+
+網站只有一頁、切分頁不換網址，所以 GA 預設只看得到「有人來了一頁」。分頁、搜尋、篩選、點了哪間店都要程式主動回報，自訂事件如下（全部集中在 `start()` 最後，用事件委派，原本的畫面程式沒改）：
+
+| 事件 | 時機 | 參數 |
+|---|---|---|
+| `tab_view` | 進站看到的分頁、每次切換 | `tab_name`、`initial` |
+| `search` / `search_no_result` | 搜尋框停止輸入 1 秒、至少 2 個字；沒結果另記一次 | `search_term`、`tab_name`、`result_count` |
+| `filter_select` | 點縣市、類型、劇本標籤、顯示已歇業、地圖縣市 | `filter_type`、`filter_value` |
+| `store_link_click` | 點店家官網／預約或地圖 | `store_name`、`city`、`link_type` |
+| `host_link_click` | 點私團主名片 | `host_name`、`region` |
+| `script_link_click` | 點劇本「在哪玩」連結 | `script_title` |
+| `report_open` / `report_submit` | 打開回報視窗／回報送出成功 | `tab_name` / `report_category` |
+| `contact_ig_click` | 點 IG @obear.tw | `source`（report_modal 或 footer） |
+| `data_load_error` | 讀不到後端資料 | `error_status` |
+
+回報表單填的內容與聯絡方式一律不送進 GA，只記類別。GA 另外開了加強型評估（網頁瀏覽、捲動、外連點擊等自動事件）。上表的 13 個參數都已在 GA 後台「自訂定義」註冊成事件範圍的自訂維度，報表才看得到店名、分頁這些細節；**新增參數時要記得一併到 GA 註冊**。頁尾有一行說明本站使用 Google Analytics。
+
 ### API 網址怎麼決定
 
 `index.html` 裡的 `API_BASE`：網址是 `localhost` 或 `127.0.0.1`（本機測試）時打 `http://127.0.0.1:5001`，其他情況打 Render 上的正式後端。
@@ -159,6 +179,26 @@ How it was verified (2026-10-16, locally): using a temporary admin session, ever
 ### The Visitor Report Form
 
 The "告訴黑熊" (tell the bear) link at the bottom of every tab (and "資料有誤？告訴黑熊" in the header) used to open just an Instagram link; it now opens a report form: which kind of data (defaulting to the current tab), which entry (optional), what's wrong (at least 5 characters), and contact info (optional). It posts to the backend's `POST /api/public/reports` and shows "收到了，謝謝你！" (got it, thank you!) on success. The Instagram link stays below the form. The form has an invisible honeypot field to stop bots. The admin interface gained a "回報" (reports) tab for setting status, writing internal notes, and deleting; by default it shows only unresolved reports. See the backend README for email sending and anti-spam details.
+
+### Traffic and User Journeys (Google Analytics 4)
+
+The public site loads GA4 (measurement ID `G-0PV9BPW86P`, property "臺灣劇本殺哪裡玩？" under the GA account "obear") only on the production host `obearwu.github.io`; during local testing, events go to `window.__events` and the console instead, so they never pollute the reports. `admin.html` deliberately doesn't load it, so admins' own activity isn't counted.
+
+The site is a single page whose tabs don't change the URL, so by default GA only sees "someone viewed one page". Tabs, searches, filters, and which store was clicked all have to be reported by code; the custom events are below (all at the end of `start()`, using event delegation, so the original rendering code is untouched):
+
+| Event | When | Parameters |
+|---|---|---|
+| `tab_view` | The tab seen on arrival, and every switch | `tab_name`, `initial` |
+| `search` / `search_no_result` | 1 second after typing stops, at least 2 characters; logged again when there are no results | `search_term`, `tab_name`, `result_count` |
+| `filter_select` | Clicking a city, type, script tag, "show closed", or a map city | `filter_type`, `filter_value` |
+| `store_link_click` | Clicking a store's website/booking or map link | `store_name`, `city`, `link_type` |
+| `host_link_click` | Clicking a private host's card | `host_name`, `region` |
+| `script_link_click` | Clicking a script's "where to play" link | `script_title` |
+| `report_open` / `report_submit` | Opening the report dialog / a report submitted successfully | `tab_name` / `report_category` |
+| `contact_ig_click` | Clicking IG @obear.tw | `source` (report_modal or footer) |
+| `data_load_error` | The backend data couldn't be loaded | `error_status` |
+
+What visitors type into the report form, and their contact info, is never sent to GA — only the category. GA's enhanced measurement is also on (page views, scrolls, outbound clicks and other automatic events). All 13 parameters above are registered as event-scoped custom dimensions under "Custom definitions" in GA admin, which is what lets reports show store names, tabs and so on; **when adding a parameter, remember to register it in GA too**. The footer has a line saying the site uses Google Analytics.
 
 ### How the API URL Is Chosen
 
