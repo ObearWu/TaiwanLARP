@@ -490,7 +490,7 @@ let tag="全部";
 const allTags=[...new Set(SCRIPTS.flatMap(s=>s.tags))];
 const tagCount=t=>SCRIPTS.filter(s=>s.tags.includes(t)).length;
 allTags.sort((a,b)=>tagCount(b)-tagCount(a));
-function statusOf(w){if(!w)return["未標註",""];if(/整修中/.test(w))return["整修中",""];if(/撰寫中/.test(w))return["撰寫中","special"];if(/已下架|已歇業/.test(w))return["已下架","dead"];return["可體驗","ok"]}
+function statusOf(w){if(!w)return["未標註",""];if(/整修中/.test(w))return["整修中",""];if(/撰寫中/.test(w))return["撰寫中","special"];if(/已停演|已下架|已歇業/.test(w))return["已停演","dead"];return["可體驗","ok"]}
 function renderScripts(){
   chips($("tagChips"),[["全部",SCRIPTS.length],...allTags.map(t=>[t,tagCount(t)])],tag,k=>{tag=k;renderScripts()});
   const q=$("scriptQ").value.trim();
